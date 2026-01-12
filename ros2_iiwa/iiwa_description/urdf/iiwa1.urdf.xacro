@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="iiwa1">
+  <xacro:include filename="$(find iiwa_description)/urdf/iiwa_macro.xacro" />
+
+  <link name="base_link"/>
+  
+  <xacro:iiwa parent="base_link" prefix="iiwa_">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </xacro:iiwa>
+
+  <gazebo>
+    <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+      <parameters>$(find iiwa_description)/config/iiwa1_controllers.yaml</parameters>
+      <robot_param>robot_description</robot_param>
+      <robot_param_node>robot_state_publisher</robot_param_node>
+      <ros>
+       <namespace>iiwa</namespace>
+       <remapping>controller_manager/robot_description:=robot_description</remapping>
+     </ros>
+    </plugin>
+  </gazebo>
+</robot>
