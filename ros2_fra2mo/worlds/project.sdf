@@ -224,56 +224,57 @@
  
    <!-- pacchi -->
 <model name="package">
-  <static>true</static>
   <pose>-5.2 0 0.51 0 0 0</pose>
-
-  <link name="link">
+  <static>false</static> <link name="package_link">
     <collision name="collision">
-      <geometry>
-        <box>
-          <size>0.2 0.2 0.2</size>
-        </box>
-      </geometry>
+      <geometry><box><size>0.2 0.2 0.2</size></box></geometry>
     </collision>
-
     <visual name="visual">
-      <geometry>
-        <box>
-          <size>0.2 0.2 0.2</size>
-        </box>
-      </geometry>
+      <geometry><box><size>0.2 0.2 0.2</size></box></geometry>
       <material>
         <ambient>1 0.5 0 1</ambient>
         <diffuse>1 0.5 0 1</diffuse>
       </material>
     </visual>
   </link>
+
+  <include>
+    <uri>model://aruco1</uri>
+    <pose>0 0 0.101 0 0 1.57</pose> 
+  </include>
+
+  <joint name="tag_joint_1" type="fixed">
+    <parent>package_link</parent>
+    <child>aruco1::aruco_link</child> 
+  </joint>
 </model>
+
 <model name="package2">
-  <static>true</static>
   <pose>-5.2 0.6 0.51 0 0 0</pose>
+  <static>false</static>
 
-  <link name="link">
+  <link name="package2_link">
     <collision name="collision">
-      <geometry>
-        <box>
-          <size>0.2 0.2 0.2</size>
-        </box>
-      </geometry>
+      <geometry><box><size>0.2 0.2 0.2</size></box></geometry>
     </collision>
-
     <visual name="visual">
-      <geometry>
-        <box>
-          <size>0.2 0.2 0.2</size>
-        </box>
-      </geometry>
+      <geometry><box><size>0.2 0.2 0.2</size></box></geometry>
       <material>
         <ambient>1 0.5 0 1</ambient>
         <diffuse>1 0.5 0 1</diffuse>
       </material>
     </visual>
   </link>
+
+  <include>
+    <uri>model://aruco2</uri>
+    <pose>0 0 0.101 0 0 1.57</pose>
+  </include>
+
+  <joint name="tag_joint_2" type="fixed">
+    <parent>package2_link</parent>
+    <child>aruco2::aruco_link</child> 
+  </joint>
 </model>
 
  <!-- punti di raccolta -->
@@ -360,21 +361,9 @@
     </visual>
   </link>
 </model>
- <include>
+ 
 
-  <uri>model://aruco1</uri>
 
-  <pose>-5.2 0 0.61 0 0 1.57</pose>
-
-</include>
-
-<include>
-
-  <uri>model://aruco2</uri>
-
-  <pose>-5.2 0.6 0.61 0 0 1.57</pose>
-
-</include>
  
     <!-- AR markers -->
 <!--include>

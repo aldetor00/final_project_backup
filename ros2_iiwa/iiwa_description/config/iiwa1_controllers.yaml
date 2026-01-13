@@ -14,11 +14,6 @@
 
 /iiwa/iiwa_arm_controller:
   ros__parameters:
-    command_interfaces:
-      - position
-    state_interfaces:
-      - position
-      - velocity
     joints:
       - iiwa_joint_a1
       - iiwa_joint_a2
@@ -27,5 +22,11 @@
       - iiwa_joint_a5
       - iiwa_joint_a6
       - iiwa_joint_a7
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      - velocity
+    
     state_publish_rate: 200.0
     action_monitor_rate: 20.0
