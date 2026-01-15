@@ -172,17 +172,37 @@
         <topic>cmd_vel</topic>
       </plugin>
     </gazebo>
-  <link name="container_link">
+    <link name="container_link">
       <visual>
-        <origin xyz="0 0 0.01" rpy="0 0 0" />
-        <geometry><box size="0.2 0.2 0.02"/></geometry> <material name="Blue_Dark"><color rgba="0 0 0.5 1"/></material>
+        <origin xyz="-0.1 0 0.01" rpy="0 0 0" />
+        <geometry><box size="0.4 0.4 0.02"/></geometry> 
+        <material name="Blue_Dark"><color rgba="0 0 0.5 1"/></material>
       </visual>
-      <visual><origin xyz="0.095 0 0.075"/><geometry><box size="0.01 0.2 0.15"/></geometry></visual>
-      <visual><origin xyz="-0.095 0 0.075"/><geometry><box size="0.01 0.2 0.15"/></geometry></visual>
-      <visual><origin xyz="0 0.095 0.075"/><geometry><box size="0.18 0.01 0.15"/></geometry></visual>
-      <visual><origin xyz="0 -0.095 0.075"/><geometry><box size="0.18 0.01 0.15"/></geometry></visual>
+
+      <visual>
+        <origin xyz="0.095 0 0.075"/>
+        <geometry><box size="0.01 0.4 0.15"/></geometry>
+      </visual>
+
+      <visual>
+        <origin xyz="-0.295 0 0.075"/>
+        <geometry><box size="0.01 0.4 0.15"/></geometry>
+      </visual>
+
+      <visual>
+        <origin xyz="-0.1 0.195 0.075"/>
+        <geometry><box size="0.38 0.01 0.15"/></geometry>
+      </visual>
+
+      <visual>
+        <origin xyz="-0.1 -0.195 0.075"/>
+        <geometry><box size="0.38 0.01 0.15"/></geometry>
+      </visual>
       
-      <collision><origin xyz="0 0 0.075"/><geometry><box size="0.2 0.2 0.15"/></geometry></collision>
+      <collision>
+        <origin xyz="-0.1 0 0.075"/>
+        <geometry><box size="0.4 0.4 0.15"/></geometry>
+      </collision>
     </link>
 
     <joint name="container_joint" type="fixed">

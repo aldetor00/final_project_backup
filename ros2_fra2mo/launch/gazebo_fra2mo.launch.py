@@ -1,4 +1,5 @@
 import os
+import yaml
 from launch import LaunchDescription
 from launch.substitutions import Command, PathJoinSubstitution
 from launch_ros.actions import Node
@@ -18,69 +19,143 @@ def generate_launch_description():
     xacro_iiwa2 = os.path.join(pkg_iiwa, "urdf", "iiwa2.urdf.xacro")
     world_file = os.path.join(pkg_fra2mo, "worlds", "project.sdf")
 
+    # --- Funzione per estrarre le posizioni iniziali ---
+    def load_yaml_initial_pos(file_name, prefix):
+        path = os.path.join(pkg_iiwa, 'config', file_name)
+        with open(path, 'r') as f:
+            data = yaml.safe_load(f)
+        pos_dict = data['initial_positions']
+        names = [f"{prefix}{k}" for k in pos_dict.keys()]
+        values = [str(v) for v in pos_dict.values()]
+        return names, values
+
+    iiwa1_names, iiwa1_values = load_yaml_initial_pos('iiwa1_initial_positions.yaml', 'iiwa_')
+    iiwa2_names, iiwa2_values = load_yaml_initial_pos('iiwa2_initial_positions.yaml', 'iiwa2_')
+
     # --- Robot State Publishers ---
     rsp_fra2mo = Node(
-        package='robot_state_publisher', executable='robot_state_publisher', name='fra2mo_state_publisher',
-        parameters=[{'robot_description': ParameterValue(Command(['xacro ', xacro_fra2mo]), value_type=str), 'use_sim_time': True}]
+        package='robot_state_publisher', 
+        executable='robot_state_publisher', 
+        name='fra2mo_state_publisher',
+        parameters=[{
+            'robot_description': ParameterValue(Command(['xacro ', xacro_fra2mo]), value_type=str), 
+            'use_sim_time': True
+        }]
     )
 
     rsp_iiwa1 = Node(
-        package='robot_state_publisher', executable='robot_state_publisher', name='robot_state_publisher', namespace='iiwa',
-        parameters=[{'robot_description': ParameterValue(Command(['xacro ', xacro_iiwa1]), value_type=str), 'use_sim_time': True}]
+        package='robot_state_publisher', 
+        executable='robot_state_publisher', 
+        name='robot_state_publisher', 
+        namespace='iiwa',
+        parameters=[{
+            'robot_description': ParameterValue(Command(['xacro ', xacro_iiwa1]), value_type=str), 
+            'use_sim_time': True
+        }]
     )
 
     rsp_iiwa2 = Node(
-        package='robot_state_publisher', executable='robot_state_publisher', name='robot_state_publisher', namespace='iiwa2',
-        parameters=[{'robot_description': ParameterValue(Command(['xacro ', xacro_iiwa2]), value_type=str), 'use_sim_time': True}]
+        package='robot_state_publisher', 
+        executable='robot_state_publisher', 
+        name='robot_state_publisher', 
+        namespace='iiwa2',
+        parameters=[{
+            'robot_description': ParameterValue(Command(['xacro ', xacro_iiwa2]), value_type=str), 
+            'use_sim_time': True
+        }]
     )
 
     # --- Gazebo ---
     gazebo = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([PathJoinSubstitution([FindPackageShare('ros_gz_sim'), 'launch', 'gz_sim.launch.py'])]),
-        launch_arguments={'gz_args': [world_file, ' -r']}.items()
+        PythonLaunchDescriptionSource([
+            PathJoinSubstitution([
+                FindPackageShare('ros_gz_sim'), 
+                'launch', 
+                'gz_sim.launch.py'
+            ])
+        ]),
+        launch_arguments={
+            'gz_args': [world_file, ' -r']
+        }.items()
     )
 
-    # --- Spawn Nodi (Robot) ---
+    # --- Spawn Robots ---
     spawn_fra2mo = Node(
-        package='ros_gz_sim', executable='create',
-        arguments=['-topic', 'robot_description', '-name', 'fra2mo', '-z', '0.1']
+        package='ros_gz_sim', 
+        executable='create',
+        arguments=[
+            '-topic', 'robot_description', 
+            '-name', 'fra2mo', 
+            '-z', '0.1'
+        ]
     )
 
     spawn_iiwa1 = Node(
-        package='ros_gz_sim', executable='create',
-        arguments=['-topic', '/iiwa/robot_description', '-name', 'iiwa1', '-x', '-4.6', '-y', '0.25', '-z', '0.1'],
+        package='ros_gz_sim', 
+        executable='create',
+        arguments=[
+            '-topic', '/iiwa/robot_description', 
+            '-name', 'iiwa1', 
+            '-x', '-4.6', '-y', '0.25', '-z', '0.1',
+            '-joint-names'] + iiwa1_names + [
+            '-joint-positions'] + iiwa1_values,
         output='screen'
     )
 
     spawn_iiwa2 = Node(
-        package='ros_gz_sim', executable='create',
-        arguments=['-topic', '/iiwa2/robot_description', '-name', 'iiwa2', '-x', '9', '-y', '3.1', '-z', '0.1'],
+        package='ros_gz_sim', 
+        executable='create',
+        arguments=[
+            '-topic', '/iiwa2/robot_description', 
+            '-name', 'iiwa2', 
+            '-x', '9', '-y', '3.1', '-z', '0.1',
+            '-joint-names'] + iiwa2_names + [
+            '-joint-positions'] + iiwa2_values,
         output='screen'
     )
 
     # --- Controller Spawners ---
-    # Definiamo i nodi separatamente per iiwa1
-    jsb_iiwa1 = Node(package="controller_manager", executable="spawner", arguments=["joint_state_broadcaster", "-c", "/iiwa/controller_manager"])
-    arm_iiwa1 = Node(package="controller_manager", executable="spawner", arguments=["iiwa_arm_controller", "-c", "/iiwa/controller_manager"])
+    jsb_iiwa1 = Node(
+        package="controller_manager", 
+        executable="spawner", 
+        arguments=["joint_state_broadcaster", "-c", "/iiwa/controller_manager"]
+    )
+    arm_iiwa1 = Node(
+        package="controller_manager", 
+        executable="spawner", 
+        arguments=["iiwa_arm_controller", "-c", "/iiwa/controller_manager"]
+    )
     
-    # Definiamo i nodi separatamente per iiwa2
-    jsb_iiwa2 = Node(package="controller_manager", executable="spawner", arguments=["joint_state_broadcaster", "-c", "/iiwa2/controller_manager"])
-    arm_iiwa2 = Node(package="controller_manager", executable="spawner", arguments=["iiwa_arm_controller", "-c", "/iiwa2/controller_manager"])
+    jsb_iiwa2 = Node(
+        package="controller_manager", 
+        executable="spawner", 
+        arguments=["joint_state_broadcaster", "-c", "/iiwa2/controller_manager"]
+    )
+    arm_iiwa2 = Node(
+        package="controller_manager", 
+        executable="spawner", 
+        arguments=["iiwa_arm_controller", "-c", "/iiwa2/controller_manager"]
+    )
 
-    # --- Event Handlers (La logica di divisione richiesta) ---
-    # Appena iiwa1 è spawnato in Gazebo, carica i suoi controller
+    # --- Event Handlers ---
     load_iiwa1_controllers = RegisterEventHandler(
-        event_handler=OnProcessExit(target_action=spawn_iiwa1, on_exit=[jsb_iiwa1, arm_iiwa1])
+        event_handler=OnProcessExit(
+            target_action=spawn_iiwa1, 
+            on_exit=[jsb_iiwa1, arm_iiwa1]
+        )
     )
 
-    # Appena iiwa2 è spawnato in Gazebo, carica i suoi controller
     load_iiwa2_controllers = RegisterEventHandler(
-        event_handler=OnProcessExit(target_action=spawn_iiwa2, on_exit=[jsb_iiwa2, arm_iiwa2])
+        event_handler=OnProcessExit(
+            target_action=spawn_iiwa2, 
+            on_exit=[jsb_iiwa2, arm_iiwa2]
+        )
     )
 
-    # --- Bridge ---
+    # --- Bridge ROS-Gazebo ---
     bridge = Node(
-        package='ros_gz_bridge', executable='parameter_bridge',
+        package='ros_gz_bridge', 
+        executable='parameter_bridge',
         arguments=[
             '/cmd_vel@geometry_msgs/msg/Twist]gz.msgs.Twist',
             '/model/fra2mo/odometry@nav_msgs/msg/Odometry@gz.msgs.Odometry',
@@ -95,8 +170,32 @@ def generate_launch_description():
         output='screen'
     )
 
+    # --- ArUco Detector ---
+    aruco_detector = Node(
+        package='aruco_ros',
+        executable='marker_publisher',
+        name='aruco_detector',
+        parameters=[{
+            'image_is_rectified': True,
+            'marker_size': 0.05,  # 5cm - MODIFICA IN BASE AI TUOI MARKER
+            'reference_frame': 'iiwa2_camera_link',
+            'camera_frame': 'iiwa2_camera_link',
+            'use_sim_time': True,
+        }],
+        remappings=[
+            ('/camera/image_raw', '/iiwa2_camera/image'),
+            ('/camera/camera_info', '/iiwa2_camera/camera_info'),
+        ],
+        output='screen'
+    )
+
     return LaunchDescription([
-        SetEnvironmentVariable(name="GZ_SIM_RESOURCE_PATH", value=os.path.join(pkg_fra2mo, 'models') + ':' + pkg_iiwa + ':' + os.environ.get('GZ_SIM_RESOURCE_PATH', '')),
+        SetEnvironmentVariable(
+            name="GZ_SIM_RESOURCE_PATH", 
+            value=os.path.join(pkg_fra2mo, 'models') + ':' + 
+                  pkg_iiwa + ':' + 
+                  os.environ.get('GZ_SIM_RESOURCE_PATH', '')
+        ),
         rsp_fra2mo, 
         rsp_iiwa1, 
         rsp_iiwa2,
@@ -106,5 +205,6 @@ def generate_launch_description():
         spawn_iiwa2,
         load_iiwa1_controllers,
         load_iiwa2_controllers,
-        bridge
+        bridge,
+        #aruco_detector  # ArUco detector integrato
     ])

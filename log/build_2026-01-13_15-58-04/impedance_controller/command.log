@@ -1,4 +1,0 @@
-Invoking command in '/home/user/ros2_ws/src/build/impedance_controller': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /home/user/ros2_ws/src/build/impedance_controller -- -j22 -l22
-Invoked command in '/home/user/ros2_ws/src/build/impedance_controller' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /home/user/ros2_ws/src/build/impedance_controller -- -j22 -l22
-Invoking command in '/home/user/ros2_ws/src/build/impedance_controller': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --install /home/user/ros2_ws/src/build/impedance_controller
-Invoked command in '/home/user/ros2_ws/src/build/impedance_controller' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --install /home/user/ros2_ws/src/build/impedance_controller
