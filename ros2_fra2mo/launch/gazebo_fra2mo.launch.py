@@ -9,6 +9,10 @@ from ament_index_python.packages import get_package_share_directory
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.actions import IncludeLaunchDescription, RegisterEventHandler, SetEnvironmentVariable
 from launch.event_handlers import OnProcessExit
+from launch.substitutions import  PathJoinSubstitution
+from launch.actions import  ExecuteProcess, TimerAction
+from launch.event_handlers import  OnProcessStart
+# ... il resto dei tuoi import
 
 def generate_launch_description():
     pkg_fra2mo = get_package_share_directory('ros2_fra2mo')
@@ -165,7 +169,19 @@ def generate_launch_description():
             '/iiwa2_camera/image@sensor_msgs/msg/Image@gz.msgs.Image',
             '/iiwa2_camera/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo',
             '/tf@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V',
-            '/tf_static@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V'
+            '/tf_static@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V',
+            '/iiwa/gripper/attach_package@std_msgs/msg/Empty@ignition.msgs.Empty',
+            '/iiwa/gripper/detach_package@std_msgs/msg/Empty@ignition.msgs.Empty',
+            '/iiwa/gripper/state_package@std_msgs/msg/Bool@ignition.msgs.Boolean', # <--- AGGIUNTA VIRGOLA
+            '/iiwa/gripper/attach_package2@std_msgs/msg/Empty@ignition.msgs.Empty',
+            '/iiwa/gripper/detach_package2@std_msgs/msg/Empty@ignition.msgs.Empty',
+            '/iiwa/gripper/state_package2@std_msgs/msg/Bool@ignition.msgs.Boolean', # <--- AGGIUNTA VIRGOLA
+            '/iiwa2/gripper/attach_package@std_msgs/msg/Empty@ignition.msgs.Empty',
+            '/iiwa2/gripper/detach_package@std_msgs/msg/Empty@ignition.msgs.Empty',
+            '/iiwa2/gripper/state_package@std_msgs/msg/Bool@ignition.msgs.Boolean', # <--- AGGIUNTA VIRGOLA
+            '/iiwa2/gripper/attach_package2@std_msgs/msg/Empty@ignition.msgs.Empty',
+            '/iiwa2/gripper/detach_package2@std_msgs/msg/Empty@ignition.msgs.Empty',
+            '/iiwa2/gripper/state_package2@std_msgs/msg/Bool@ignition.msgs.Boolean'
         ],
         output='screen'
     )
@@ -190,11 +206,11 @@ def generate_launch_description():
     )
     
     detach_package1 = ExecuteProcess(
-        cmd=['ros2', 'topic', 'pub', '--once', '/iiwa1/gripper/detach_package', 'std_msgs/msg/Empty', '{}'],
+        cmd=['ros2', 'topic', 'pub', '--once', '/iiwa/gripper/detach_package', 'std_msgs/msg/Empty', '{}'],
         output='screen'
     )
     detach_package2 = ExecuteProcess(
-        cmd=['ros2', 'topic', 'pub', '--once', '/iiwa1/gripper/detach_package2', 'std_msgs/msg/Empty', '{}'],
+        cmd=['ros2', 'topic', 'pub', '--once', '/iiwa/gripper/detach_package2', 'std_msgs/msg/Empty', '{}'],
         output='screen'
     )
     detach_package3 = ExecuteProcess(
@@ -211,7 +227,7 @@ def generate_launch_description():
             target_action=bridge,
             on_start=[
                 TimerAction(
-                    period=3.0,  # Tempo per garantire che il robot sia spawnato
+                    period=10.0,  # Tempo per garantire che il robot sia spawnato
                     actions=[detach_package1, detach_package2, detach_package3, detach_package4]
                 )
             ]

@@ -268,9 +268,9 @@
       <parent_link>iiwa_vacuum_gripper_link</parent_link>
       <child_model>package</child_model>
       <child_link>package_link</child_link>
-      <output_topic>/iiwa1/gripper/state_package</output_topic>
-      <detach_topic>/iiwa1/gripper/detach_package</detach_topic>
-      <attach_topic>/iiwa1/gripper/attach_package</attach_topic>
+      <output_topic>/iiwa/gripper/state_package</output_topic>
+      <detach_topic>/iiwa/gripper/detach_package</detach_topic>
+      <attach_topic>/iiwa/gripper/attach_package</attach_topic>
     </plugin>
   </gazebo>
   <gazebo>
@@ -279,9 +279,9 @@
       <parent_link>iiwa_vacuum_gripper_link</parent_link>
       <child_model>package2</child_model>
       <child_link>package2_link</child_link>
-      <output_topic>/iiwa1/gripper/state_package2</output_topic>
-      <detach_topic>/iiwa1/gripper/detach_package2</detach_topic>
-      <attach_topic>/iiwa1/gripper/attach_package2</attach_topic>
+      <output_topic>/iiwa/gripper/state_package2</output_topic>
+      <detach_topic>/iiwa/gripper/detach_package2</detach_topic>
+      <attach_topic>/iiwa/gripper/attach_package2</attach_topic>
     </plugin>
   </gazebo>
   
