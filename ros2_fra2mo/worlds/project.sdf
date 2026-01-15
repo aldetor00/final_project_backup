@@ -222,7 +222,7 @@
  
    <!-- pacchi -->
 <model name="package">
-  <pose>-5.2 0 0.51 0 0 0</pose>
+  <pose>-5.1 0 0.51 0 0 0</pose>
   <static>false</static> 
   <link name="package_link">
     <collision name="collision">
@@ -246,10 +246,19 @@
     <parent>package_link</parent>
     <child>aruco1::aruco_link</child> 
   </joint>
+  <!--<plugin filename="libignition-gazebo-detachable-joint-system.so"
+            name="ignition::gazebo::systems::DetachableJoint">
+      <parent_link>iiwa1::iiwa_vacuum_gripper_link</parent_link>
+      <child_model>package</child_model>
+      <child_link>package_link</child_link>
+      <output_topic>/iiwa1/gripper/state</output_topic>
+      <detach_topic>/iiwa1/gripper/detach</detach_topic>
+      <attach_topic>/iiwa1/gripper/attach</attach_topic>
+   </plugin>-->
 </model>
 
 <model name="package2">
-  <pose>-5.2 0.6 0.51 0 0 0</pose>
+  <pose>-5.1 0.6 0.51 0 0 0</pose>
   <static>false</static>
 
   <link name="package2_link">
@@ -274,6 +283,15 @@
     <parent>package2_link</parent>
     <child>aruco2::aruco_link</child> 
   </joint>
+  <!--<plugin filename="libignition-gazebo-detachable-joint-system.so"
+            name="ignition::gazebo::systems::DetachableJoint">
+      <parent_link>iiwa2::iiwa2_vacuum_gripper_link</parent_link>
+      <child_model>package2</child_model>
+      <child_link>package2_link</child_link>
+      <output_topic>/iiwa2/gripper/state</output_topic>
+      <detach_topic>/iiwa2/gripper/detach</detach_topic>
+      <attach_topic>/iiwa2/gripper/attach</attach_topic>
+   </plugin>-->
 </model>
 
  <!-- punti di raccolta -->

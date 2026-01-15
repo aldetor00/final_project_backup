@@ -188,7 +188,36 @@ def generate_launch_description():
         ],
         output='screen'
     )
-
+    
+    detach_package1 = ExecuteProcess(
+        cmd=['ros2', 'topic', 'pub', '--once', '/iiwa1/gripper/detach_package', 'std_msgs/msg/Empty', '{}'],
+        output='screen'
+    )
+    detach_package2 = ExecuteProcess(
+        cmd=['ros2', 'topic', 'pub', '--once', '/iiwa1/gripper/detach_package2', 'std_msgs/msg/Empty', '{}'],
+        output='screen'
+    )
+    detach_package3 = ExecuteProcess(
+        cmd=['ros2', 'topic', 'pub', '--once', '/iiwa2/gripper/detach_package', 'std_msgs/msg/Empty', '{}'],
+        output='screen'
+    )
+    detach_package4 = ExecuteProcess(
+        cmd=['ros2', 'topic', 'pub', '--once', '/iiwa2/gripper/detach_package2', 'std_msgs/msg/Empty', '{}'],
+        output='screen'
+    )
+    # Handler: Quando il bridge parte, aspetta 5 secondi e poi invia il detach
+    detach_handler = RegisterEventHandler(
+        event_handler=OnProcessStart(
+            target_action=bridge,
+            on_start=[
+                TimerAction(
+                    period=3.0,  # Tempo per garantire che il robot sia spawnato
+                    actions=[detach_package1, detach_package2, detach_package3, detach_package4]
+                )
+            ]
+        )
+    )
+    
     return LaunchDescription([
         SetEnvironmentVariable(
             name="GZ_SIM_RESOURCE_PATH", 
@@ -206,5 +235,6 @@ def generate_launch_description():
         load_iiwa1_controllers,
         load_iiwa2_controllers,
         bridge,
+        detach_handler,
         #aruco_detector  # ArUco detector integrato
     ])
