@@ -83,7 +83,7 @@ public:
                                 "effort_controller/commands";
         
         cmdPublisher_ = this->create_publisher<FloatArray>(cmd_topic, 10);
-
+        last_marker_time_ = this->get_clock()->now();
         RCLCPP_INFO(this->get_logger(), "Node Ready. Interface: %s, Ctrl: %s", cmd_interface_.c_str(), ctrl_.c_str());
     }
 

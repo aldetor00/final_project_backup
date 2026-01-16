@@ -206,7 +206,7 @@
     </joint>
 
     <joint name="${prefix}camera_joint" type="fixed">
-      <parent link="${prefix}tool0"/><child link="${prefix}camera_link"/><origin xyz="0 0 0.02" rpy="0 0 0"/>
+      <parent link="${prefix}tool0"/><child link="${prefix}camera_link"/><origin xyz="0 0 0.02" rpy="0 -1.57 -1.57"/>
     </joint>
 
     <gazebo reference="${prefix}camera_link">
@@ -265,13 +265,13 @@
 
   <ros2_control name="iiwa2_hardware" type="system">
     <hardware><plugin>gz_ros2_control/GazeboSimSystem</plugin></hardware>
-    <joint name="iiwa2_joint_a1"><command_interface name="position"/><state_interface name="position"/><state_interface name="velocity"/></joint>
-    <joint name="iiwa2_joint_a2"><command_interface name="position"/><state_interface name="position"/><state_interface name="velocity"/></joint>
-    <joint name="iiwa2_joint_a3"><command_interface name="position"/><state_interface name="position"/><state_interface name="velocity"/></joint>
-    <joint name="iiwa2_joint_a4"><command_interface name="position"/><state_interface name="position"/><state_interface name="velocity"/></joint>
-    <joint name="iiwa2_joint_a5"><command_interface name="position"/><state_interface name="position"/><state_interface name="velocity"/></joint>
-    <joint name="iiwa2_joint_a6"><command_interface name="position"/><state_interface name="position"/><state_interface name="velocity"/></joint>
-    <joint name="iiwa2_joint_a7"><command_interface name="position"/><state_interface name="position"/><state_interface name="velocity"/></joint>
+    <joint name="iiwa2_joint_a1"><command_interface name="position"/><command_interface name="velocity"/><state_interface name="position"/><state_interface name="velocity"/></joint>
+    <joint name="iiwa2_joint_a2"><command_interface name="position"/><command_interface name="velocity"/><state_interface name="position"/><state_interface name="velocity"/></joint>
+    <joint name="iiwa2_joint_a3"><command_interface name="position"/><command_interface name="velocity"/><state_interface name="position"/><state_interface name="velocity"/></joint>
+    <joint name="iiwa2_joint_a4"><command_interface name="position"/><command_interface name="velocity"/><state_interface name="position"/><state_interface name="velocity"/></joint>
+    <joint name="iiwa2_joint_a5"><command_interface name="position"/><command_interface name="velocity"/><state_interface name="position"/><state_interface name="velocity"/></joint>
+    <joint name="iiwa2_joint_a6"><command_interface name="position"/><command_interface name="velocity"/><state_interface name="position"/><state_interface name="velocity"/></joint>
+    <joint name="iiwa2_joint_a7"><command_interface name="position"/><command_interface name="velocity"/><state_interface name="position"/><state_interface name="velocity"/></joint>
   </ros2_control>
   <gazebo>
     <plugin filename="libignition-gazebo-detachable-joint-system.so"

@@ -140,7 +140,12 @@ def generate_launch_description():
         executable="spawner", 
         arguments=["iiwa_arm_controller", "-c", "/iiwa2/controller_manager"]
     )
-
+    velocity_controller = Node(
+        package='controller_manager',
+        executable='spawner',
+        output='log',
+        arguments=['velocity_controller', '-c', '/iiwa2/controller_manager'],
+    )
     # --- Event Handlers ---
     load_iiwa1_controllers = RegisterEventHandler(
         event_handler=OnProcessExit(
@@ -152,9 +157,11 @@ def generate_launch_description():
     load_iiwa2_controllers = RegisterEventHandler(
         event_handler=OnProcessExit(
             target_action=spawn_iiwa2, 
-            on_exit=[jsb_iiwa2, arm_iiwa2]
+            on_exit=[jsb_iiwa2, #arm_iiwa2,
+                     velocity_controller]
         )
     )
+    
 
     # --- Bridge ROS-Gazebo ---
     bridge = Node(
@@ -250,6 +257,7 @@ def generate_launch_description():
         spawn_iiwa2,
         load_iiwa1_controllers,
         load_iiwa2_controllers,
+        #velocity_controller,
         bridge,
         detach_handler,
         #aruco_detector  # ArUco detector integrato

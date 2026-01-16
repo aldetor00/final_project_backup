@@ -16,7 +16,7 @@ public:
   ExecuteTrajectoryClient()
   : Node("execute_trajectory_client")
   {
-    client_ = rclcpp_action::create_client<ExecuteTrajectory>(this, "/iiwa/ExecuteTrajectory");
+    client_ = rclcpp_action::create_client<ExecuteTrajectory>(this, "/iiwa2/ExecuteTrajectory");
 
     if (!client_->wait_for_action_server(10s)) {
       RCLCPP_ERROR(this->get_logger(), "Action not available after 10 seconds");
