@@ -135,11 +135,7 @@ def generate_launch_description():
         executable="spawner", 
         arguments=["joint_state_broadcaster", "-c", "/iiwa2/controller_manager"]
     )
-    arm_iiwa2 = Node(
-        package="controller_manager", 
-        executable="spawner", 
-        arguments=["iiwa_arm_controller", "-c", "/iiwa2/controller_manager"]
-    )
+    
     velocity_controller = Node(
         package='controller_manager',
         executable='spawner',
