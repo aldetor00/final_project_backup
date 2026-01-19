@@ -135,7 +135,11 @@ def generate_launch_description():
         executable="spawner", 
         arguments=["joint_state_broadcaster", "-c", "/iiwa2/controller_manager"]
     )
-    
+    arm_iiwa2 = Node(
+        package="controller_manager", 
+        executable="spawner", 
+        arguments=["iiwa_arm_controller", "-c", "/iiwa2/controller_manager"]
+    )
     velocity_controller = Node(
         package='controller_manager',
         executable='spawner',
@@ -153,8 +157,9 @@ def generate_launch_description():
     load_iiwa2_controllers = RegisterEventHandler(
         event_handler=OnProcessExit(
             target_action=spawn_iiwa2, 
-            on_exit=[jsb_iiwa2, #arm_iiwa2,
-                     velocity_controller]
+            on_exit=[jsb_iiwa2, arm_iiwa2
+                     #velocity_controller
+                     ]
         )
     )
     
