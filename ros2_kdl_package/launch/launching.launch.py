@@ -27,68 +27,49 @@ def generate_launch_description():
         description='Select velocity controller: velocity_ctrl, velocity_ctrl_null or vision'
     )
 
-    # --- NODO BRIDGE (IGNITION -> ROS 2) ---
-    # Questo nodo traduce i topic della camera per ROS
-    bridge_node = Node(
-    package='ros_gz_bridge',
-    executable='parameter_bridge',
-    arguments=[
-        # Configurazione corretta: <topic_gazebo>@<msg_ros>@<msg_gazebo>
-        '/iiwa2_camera@sensor_msgs/msg/Image[ignition.msgs.Image',
-        '/iiwa2_camera_info@sensor_msgs/msg/CameraInfo[ignition.msgs.CameraInfo',
-        '/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock',
-        '/tf@tf2_msgs/msg/TFMessage[ignition.msgs.Pose_V'
-    ],
-    remappings=[
-        ('/iiwa2_camera', '/camera/image_raw'),
-        ('/iiwa2_camera_info', '/camera/camera_info')
-    ],
-    parameters=[{'use_sim_time': True}],
-    output='screen'
-)
-
     # --- NODO ARUCO DETECTION ---
-    # Questo nodo analizza le immagini e pubblica /aruco_single/pose
+    # I topic della camera sono già bridgati da gazebo_fra2mo.launch.py
+    # Dobbiamo solo rimappare correttamente
     aruco_node = Node(
         package='aruco_ros',
         executable='single',
         name='aruco_single',
         parameters=[{
-            'image_is_rect': True,
-            'marker_size': 0.05,         # Dimensione del tag in metri
-            'marker_id': 1,            # ID del tag (assicurati coincida con Gazebo)
+            'image_is_rectified': True,
+            'marker_size': 0.05,         # Dimensione del tag in metri (5cm)
+            'marker_id': 1,              # ID del tag ArUco
             'reference_frame': 'iiwa2_camera_link', 
             'camera_frame': 'iiwa2_camera_link',
-            'marker_frame': 'aruco_marker_frame'
+            'marker_frame': 'aruco_marker_frame',
+            'use_sim_time': True
         }],
         remappings=[
-            ('/iiwa2_camera', '/camera/image_raw'),
-            ('/iiwa2_camera_info', '/camera/camera_info')
+            ('/image', '/iiwa2_camera'),
+            ('/camera_info', '/camera_info')
         ],
         output='screen'
     )
 
     # --- NODO KDL (IL TUO CODICE C++) ---
     ros2_kdl_node = Node(
-    package='ros2_kdl_package',
-    executable='ros2_kdl_node',
-    namespace='iiwa2',  # <--- CAMBIATO DA iiwa A iiwa2
-    output='screen',
-    parameters=[
-        config_params,
-        {'use_sim_time': True, 'cmd_interface': 'velocity', 'ctrl': 'vision'}
-    ],
-    remappings=[
-        ('joint_states', '/iiwa2/joint_states'), # <--- PUNTA AI GIUNTI DI IIWA2
-        ('velocity_controller/commands', '/iiwa2/velocity_controller/commands'),
-        ('/aruco_single/pose', '/aruco_single/pose')
-    ]
-)
+        package='ros2_kdl_package',
+        executable='ros2_kdl_node',
+        namespace='iiwa2',
+        output='screen',
+        parameters=[
+            config_params,
+            {'use_sim_time': True, 'cmd_interface': 'velocity', 'ctrl': 'vision'}
+        ],
+        remappings=[
+            ('joint_states', '/iiwa2/joint_states'),
+            ('velocity_controller/commands', '/iiwa2/velocity_controller/commands'),
+            ('/aruco_single/pose', '/aruco_single/pose')
+        ]
+    )
 
     return LaunchDescription([
         cmd_interface_arg,
         ctrl_arg,
-        bridge_node,
         aruco_node,
         ros2_kdl_node
     ])
