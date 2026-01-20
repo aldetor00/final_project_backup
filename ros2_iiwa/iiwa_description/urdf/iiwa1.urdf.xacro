@@ -290,7 +290,10 @@
       <parameters>$(find iiwa_description)/config/iiwa1_controllers.yaml</parameters>
       <robot_param>robot_description</robot_param>
       <robot_param_node>robot_state_publisher</robot_param_node>
-      <ros><namespace>iiwa</namespace></ros>
+      <ros>
+        <namespace>iiwa</namespace>
+        <remapping>controller_manager/robot_description:=robot_description</remapping>
+      </ros>
     </plugin>
   </gazebo>
 </robot>

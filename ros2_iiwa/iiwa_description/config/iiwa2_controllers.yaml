@@ -7,9 +7,6 @@
     iiwa_arm_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
-      #type: position_controllers/JointGroupPositionController
-    velocity_controller:
-      type: velocity_controllers/JointGroupVelocityController
 
 /iiwa2/joint_state_broadcaster:
   ros__parameters:
@@ -32,26 +29,3 @@
     
     state_publish_rate: 30.0
     action_monitor_rate: 20.0
-/iiwa2/velocity_controller:
-  ros__parameters:
-    joints:
-      - iiwa2_joint_a1
-      - iiwa2_joint_a2
-      - iiwa2_joint_a3
-      - iiwa2_joint_a4
-      - iiwa2_joint_a5
-      - iiwa2_joint_a6
-      - iiwa2_joint_a7   
-    command_interfaces:
-      - velocity
-    state_interfaces:
-      - position
-      - velocity
-    gains:
-      iiwa2_joint_a1: {p: 1.0}
-      iiwa2_joint_a2: {p: 1.0}
-      iiwa2_joint_a3: {p: 1.0}
-      iiwa2_joint_a4: {p: 1.0}
-      iiwa2_joint_a5: {p: 1.0}
-      iiwa2_joint_a6: {p: 1.0}
-      iiwa2_joint_a7: {p: 1.0}
