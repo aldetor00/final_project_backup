@@ -23,25 +23,22 @@ def generate_launch_description():
     
     ctrl_arg = DeclareLaunchArgument(
         'ctrl', 
-        default_value='velocity_ctrl_null',
+        default_value='vision',
         description='Select velocity controller: velocity_ctrl, velocity_ctrl_null or vision'
     )
 
-    # --- NODO ARUCO DETECTION ---
-    # I topic della camera sono già bridgati da gazebo_fra2mo.launch.py
-    # Dobbiamo solo rimappare correttamente
-    aruco_node = Node(
+    # --- NODO ARUCO MARKER PUBLISHER (Rileva TUTTI i tag) ---
+    aruco_marker_publisher = Node(
         package='aruco_ros',
-        executable='single',
-        name='aruco_single',
+        executable='marker_publisher',
+        name='aruco_marker_publisher',
         parameters=[{
             'image_is_rectified': True,
-            'marker_size': 0.05,         # Dimensione del tag in metri (5cm)
-            'marker_id': 1,              # ID del tag ArUco
+            'marker_size': 0.05,         # Dimensione 5cm
             'reference_frame': 'iiwa2_camera_link', 
             'camera_frame': 'iiwa2_camera_link',
-            'marker_frame': 'aruco_marker_frame',
-            'use_sim_time': True
+            'use_sim_time': True ,
+            'dictionary': 10,  # AGGIUNGI: 0=DICT_4X4_50, 10=DICT_ARUCO_ORIGINAL, 16=DICT_6X6_250
         }],
         remappings=[
             ('/image', '/iiwa2_camera'),
@@ -49,8 +46,8 @@ def generate_launch_description():
         ],
         output='screen'
     )
-
-    # --- NODO KDL (IL TUO CODICE C++) ---
+    
+    # --- NODO KDL ---
     ros2_kdl_node = Node(
         package='ros2_kdl_package',
         executable='ros2_kdl_node',
@@ -62,14 +59,15 @@ def generate_launch_description():
         ],
         remappings=[
             ('joint_states', '/iiwa2/joint_states'),
-            ('velocity_controller/commands', '/iiwa2/velocity_controller/commands'),
-            ('/aruco_single/pose', '/aruco_single/pose')
+            ('velocity_controller/commands', '/iiwa2/velocity_controller/commands')
+            # Nota: il remapping della posa non serve più perché useremo le TF
         ]
     )
 
     return LaunchDescription([
         cmd_interface_arg,
         ctrl_arg,
-        aruco_node,
+        aruco_marker_publisher,
+
         ros2_kdl_node
     ])

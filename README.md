@@ -23,8 +23,14 @@ ros2 topic pub --once /iiwa2/iiwa_arm_controller/joint_trajectory trajectory_msg
   ],
   points: [
     {
-      positions: [0.5, 0.5, 0.0, -1.0, 0.0, 0.5, 0.0],
+      positions: [3.0, 1.0, 0.0, -1.0, 0.0, 0.5, 0.0],
       time_from_start: {sec: 4, nanosec: 0}
     }
   ]
 }"
+ [1.57, -0.45, 0.0, 1.5, 0.0, -0.90, 0.0]
+       positions: [3.0, 1.0, 0.0, -1.0, 0.0, 0.5, 0.0],
+      positions: [3.0, 0.0, 0.0, -1.5, 0.0, 0.5, 0.0],
+      positions: [1.5, 0.0, 0.0, -1.5, 0.0, 0.5, 0.0],
+      positions: [1.5, 1.5, 0.0, -1.0, 0.0, 0.5, 0.0],
+

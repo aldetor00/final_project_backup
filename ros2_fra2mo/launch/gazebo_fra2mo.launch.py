@@ -256,15 +256,40 @@ def generate_launch_description():
 
     detach_handler = RegisterEventHandler(
         OnProcessStart(
+            target_action = bridge,
+            on_start=[
+                TimerAction(period=5.0, actions=[detach_package1]),
+                TimerAction(period=6.0, actions=[detach_package2]),
+                TimerAction(period=7.0, actions=[detach_package3]),
+                TimerAction(period=8.0, actions=[detach_package4])                
+            ]
+        )
+    )   
+    iiwa_handler = RegisterEventHandler(
+        OnProcessStart(
             target_action=bridge,
             on_start=[
                 TimerAction(
-                    period=10.0,
+                    period=1.0,
                     actions=[
-                        detach_package1,
-                        detach_package2,
-                        detach_package3,
-                        detach_package4
+                        rsp_iiwa1,
+                        spawn_iiwa1,
+                        load_iiwa1_controllers,
+                    ]
+                )
+            ]
+        )
+    )
+    iiwa2_handler = RegisterEventHandler(
+        OnProcessStart(
+            target_action=bridge,
+            on_start=[
+                TimerAction(
+                    period=4.0,
+                    actions=[
+                        rsp_iiwa2,
+                        spawn_iiwa2,
+                        load_iiwa2_controllers,
                     ]
                 )
             ]
@@ -278,15 +303,14 @@ def generate_launch_description():
                   pkg_iiwa + ':' +
                   os.environ.get('GZ_SIM_RESOURCE_PATH', '')
         ),
-        rsp_fra2mo,
-        rsp_iiwa1,
-        rsp_iiwa2,
+
         gazebo,
+        rsp_fra2mo,
         spawn_fra2mo,
-        spawn_iiwa1,
-        spawn_iiwa2,
-        load_iiwa1_controllers,
-        load_iiwa2_controllers,
+        iiwa_handler,
+        iiwa2_handler,
+       
+       
         bridge,
         detach_handler,
         # aruco_detector

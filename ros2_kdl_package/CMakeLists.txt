@@ -20,7 +20,7 @@ find_package(rclcpp_action REQUIRED)
 find_package(action_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 find_package(tf2_ros REQUIRED)
-
+find_package(trajectory_msgs REQUIRED)
 # ======== Generazione action ========
 rosidl_generate_interfaces(${PROJECT_NAME}
   "action/ExecuteTrajectory.action"
@@ -53,6 +53,7 @@ ament_target_dependencies(ros2_kdl_node
   sensor_msgs
   std_msgs
   geometry_msgs
+  trajectory_msgs
   tf2_ros
 )
 
