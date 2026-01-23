@@ -14,19 +14,6 @@ def generate_launch_description():
         'kdl_params.yaml'
     ])
 
-    # --- ARGOMENTI ---
-    cmd_interface_arg = DeclareLaunchArgument(
-        'cmd_interface', 
-        default_value='velocity',
-        description='Select controller: position, velocity or effort'
-    )
-    
-    ctrl_arg = DeclareLaunchArgument(
-        'ctrl', 
-        default_value='vision',
-        description='Select velocity controller: velocity_ctrl, velocity_ctrl_null or vision'
-    )
-
     # --- NODO ARUCO MARKER PUBLISHER (Rileva TUTTI i tag) ---
     aruco_marker_publisher = Node(
         package='aruco_ros',
@@ -34,11 +21,11 @@ def generate_launch_description():
         name='aruco_marker_publisher',
         parameters=[{
             'image_is_rectified': True,
-            'marker_size': 0.05,         # Dimensione 5cm
-            'reference_frame': 'iiwa2_camera_link', 
+            'marker_size': 0.05,
+            'reference_frame': 'iiwa2_camera_link',
             'camera_frame': 'iiwa2_camera_link',
-            'use_sim_time': True ,
-            'dictionary': 10,  # AGGIUNGI: 0=DICT_4X4_50, 10=DICT_ARUCO_ORIGINAL, 16=DICT_6X6_250
+            'use_sim_time': True,
+            'dictionary': 0,  # DICT_4X4_50
         }],
         remappings=[
             ('/image', '/iiwa2_camera'),
@@ -47,7 +34,7 @@ def generate_launch_description():
         output='screen'
     )
     
-    # --- NODO KDL ---
+    # --- NODO KDL SERVER ---
     ros2_kdl_node = Node(
         package='ros2_kdl_package',
         executable='ros2_kdl_node',
@@ -55,19 +42,37 @@ def generate_launch_description():
         output='screen',
         parameters=[
             config_params,
-            {'use_sim_time': True, 'cmd_interface': 'velocity', 'ctrl': 'vision'}
+            {
+                'use_sim_time': True,
+                'traj_duration': 4.0,
+                'Kp': 10.0
+            }
         ],
         remappings=[
             ('joint_states', '/iiwa2/joint_states'),
-            ('velocity_controller/commands', '/iiwa2/velocity_controller/commands')
-            # Nota: il remapping della posa non serve più perché useremo le TF
         ]
     )
 
-    return LaunchDescription([
-        cmd_interface_arg,
-        ctrl_arg,
-        aruco_marker_publisher,
+    # --- STATIC TF PER CAMERA (se necessario) ---
+    static_tf_node = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='camera_static_tf',
+        arguments=[
+            '--x', '0.07',
+            '--y', '0.0',
+            '--z', '-0.03',
+            '--roll', '3.14',
+            '--pitch', '-1.57',
+            '--yaw', '0.0',
+            '--frame-id', 'iiwa2_tool0',
+            '--child-frame-id', 'iiwa2/iiwa2_link_7/iiwa2_camera'
+        ],
+        output='screen'
+    )
 
-        ros2_kdl_node
+    return LaunchDescription([
+        aruco_marker_publisher,
+        ros2_kdl_node,
+        static_tf_node
     ])

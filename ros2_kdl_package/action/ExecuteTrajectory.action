@@ -1,9 +1,10 @@
 # Goal
 int32 order
+geometry_msgs/Pose pose
+float64[] joints_target
 ---
 # Result
 bool success
 ---
 # Feedback
-float64[3] position_error
-
+float64[] position_error

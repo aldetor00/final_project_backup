@@ -21,14 +21,16 @@ find_package(action_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(trajectory_msgs REQUIRED)
+find_package(aruco_msgs REQUIRED)
+
 # ======== Generazione action ========
 rosidl_generate_interfaces(${PROJECT_NAME}
   "action/ExecuteTrajectory.action"
-  DEPENDENCIES builtin_interfaces
+  DEPENDENCIES builtin_interfaces geometry_msgs
 )
 ament_export_dependencies(rosidl_default_runtime)
 
-# ======== Nodo principale ========
+# ======== Nodo principale (Server) ========
 add_executable(ros2_kdl_node
   src/ros2_kdl_node.cpp
   src/kdl_robot.cpp
@@ -57,7 +59,6 @@ ament_target_dependencies(ros2_kdl_node
   tf2_ros
 )
 
-# ======== Collega le action generate al nodo ========
 rosidl_target_interfaces(ros2_kdl_node
   ${PROJECT_NAME} "rosidl_typesupport_cpp"
 )
@@ -78,10 +79,10 @@ ament_target_dependencies(ros2_kdl_node_example
   rclcpp
 )
 
-
+# ======== Client semplice ========
 add_executable(ros2_kdl_node_client 
-src/ros2_kdl_node_client.cpp)
-
+  src/ros2_kdl_node_client.cpp
+)
 
 ament_target_dependencies(ros2_kdl_node_client
   rclcpp
@@ -92,12 +93,29 @@ rosidl_target_interfaces(ros2_kdl_node_client
   ${PROJECT_NAME} "rosidl_typesupport_cpp"
 )
 
+# ======== Client Dual Marker (NUOVO) ========
+add_executable(dual_marker_client 
+  src/dual_marker_client.cpp
+)
 
+ament_target_dependencies(dual_marker_client
+  rclcpp
+  rclcpp_action
+  geometry_msgs
+  std_msgs
+  aruco_msgs
+)
 
-
+rosidl_target_interfaces(dual_marker_client
+  ${PROJECT_NAME} "rosidl_typesupport_cpp"
+)
 
 # ======== Install ========
-install(TARGETS ros2_kdl_node ros2_kdl_node_example ros2_kdl_node_client
+install(TARGETS 
+  ros2_kdl_node 
+  ros2_kdl_node_example 
+  ros2_kdl_node_client 
+  dual_marker_client
   DESTINATION lib/${PROJECT_NAME}
 )
 
