@@ -33,4 +33,7 @@ ros2 topic pub --once /iiwa2/iiwa_arm_controller/joint_trajectory trajectory_msg
       positions: [3.0, 0.0, 0.0, -1.5, 0.0, 0.5, 0.0],
       positions: [1.5, 0.0, 0.0, -1.5, 0.0, 0.5, 0.0],
       positions: [1.5, 1.5, 0.0, -1.0, 0.0, 0.5, 0.0],
+ros2 launch ros2_kdl_package launching.launch.py
+ros2 run ros2_kdl_package dual_marker_client
+
 
