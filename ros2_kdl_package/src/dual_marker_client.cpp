@@ -61,7 +61,7 @@ private:
     // Sequenze Joint Marker 2
     std::vector<double> marker2_step1_ = {-3.0, 0.0, 0.0, -1.5, 0.0, 0.5, 0.0};
     std::vector<double> marker2_step2_ = {-1.5, 0.0, 0.0, -1.5, 0.0, 0.5, 0.0};
-    std::vector<double> marker2_step3_ = {-1.5, 1.5, 0.0, -1.0, 0.0, 0.5, 0.0};
+    std::vector<double> marker2_step3_ = {-1.5, 0.65, 0.0, -1.5, 0.0, 0.5, 0.0};
 
     void aruco_callback(const aruco_msgs::msg::MarkerArray::SharedPtr msg) {
         if (current_state_ != State::SEARCHING || msg->markers.empty()) return;

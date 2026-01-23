@@ -222,7 +222,7 @@
  
    <!-- pacchi -->
 <model name="package">
-  <pose>-5.1 0 0.51 0 0 0</pose>
+  <pose>-5.15 0.04 0.51 0 0 0</pose>
   <static>false</static> 
   <link name="package_link">
     <collision name="collision">
@@ -250,7 +250,7 @@
 </model>
 
 <model name="package2">
-  <pose>-5.1 0.6 0.51 0 0 0</pose>
+  <pose>-5.15 0.45 0.51 0 0 0</pose>
   <static>false</static>
 
   <link name="package2_link">

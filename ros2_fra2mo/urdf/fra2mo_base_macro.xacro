@@ -178,30 +178,46 @@
         <geometry><box size="0.4 0.4 0.02"/></geometry> 
         <material name="Blue_Dark"><color rgba="0 0 0.5 1"/></material>
       </visual>
-
       <visual>
         <origin xyz="0.095 0 0.075"/>
         <geometry><box size="0.01 0.4 0.15"/></geometry>
       </visual>
-
       <visual>
         <origin xyz="-0.295 0 0.075"/>
         <geometry><box size="0.01 0.4 0.15"/></geometry>
       </visual>
-
       <visual>
         <origin xyz="-0.1 0.195 0.075"/>
         <geometry><box size="0.38 0.01 0.15"/></geometry>
       </visual>
-
       <visual>
         <origin xyz="-0.1 -0.195 0.075"/>
         <geometry><box size="0.38 0.01 0.15"/></geometry>
       </visual>
       
       <collision>
-        <origin xyz="-0.1 0 0.075"/>
-        <geometry><box size="0.4 0.4 0.15"/></geometry>
+        <origin xyz="-0.1 0 0.01" rpy="0 0 0" />
+        <geometry><box size="0.4 0.4 0.02"/></geometry>
+      </collision>
+
+      <collision>
+        <origin xyz="0.095 0 0.075"/>
+        <geometry><box size="0.01 0.4 0.15"/></geometry>
+      </collision>
+
+      <collision>
+        <origin xyz="-0.295 0 0.075"/>
+        <geometry><box size="0.01 0.4 0.15"/></geometry>
+      </collision>
+
+      <collision>
+        <origin xyz="-0.1 0.195 0.075"/>
+        <geometry><box size="0.38 0.01 0.15"/></geometry>
+      </collision>
+
+      <collision>
+        <origin xyz="-0.1 -0.195 0.075"/>
+        <geometry><box size="0.38 0.01 0.15"/></geometry>
       </collision>
     </link>
 
