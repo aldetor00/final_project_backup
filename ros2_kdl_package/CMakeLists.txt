@@ -37,15 +37,12 @@ add_executable(ros2_kdl_node
   src/kdl_planner.cpp
   src/kdl_control.cpp
 )
-
 target_include_directories(ros2_kdl_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
   ${EIGEN3_INCLUDE_DIRS}
 )
-
 target_compile_features(ros2_kdl_node PUBLIC c_std_99 cxx_std_17)
-
 ament_target_dependencies(ros2_kdl_node
   orocos_kdl
   rclcpp
@@ -58,22 +55,18 @@ ament_target_dependencies(ros2_kdl_node
   trajectory_msgs
   tf2_ros
 )
-
 rosidl_target_interfaces(ros2_kdl_node
   ${PROJECT_NAME} "rosidl_typesupport_cpp"
 )
 
 # ======== Nodo di esempio opzionale ========
 add_executable(ros2_kdl_node_example src/ros2_kdl_node_example.cpp)
-
 target_include_directories(ros2_kdl_node_example PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
   ${EIGEN3_INCLUDE_DIRS}
 )
-
 target_compile_features(ros2_kdl_node_example PUBLIC c_std_99 cxx_std_17)
-
 ament_target_dependencies(ros2_kdl_node_example
   orocos_kdl
   rclcpp
@@ -83,21 +76,18 @@ ament_target_dependencies(ros2_kdl_node_example
 add_executable(ros2_kdl_node_client 
   src/ros2_kdl_node_client.cpp
 )
-
 ament_target_dependencies(ros2_kdl_node_client
   rclcpp
   rclcpp_action
 )
-
 rosidl_target_interfaces(ros2_kdl_node_client
   ${PROJECT_NAME} "rosidl_typesupport_cpp"
 )
 
-# ======== Client Dual Marker (NUOVO) ========
+# ======== Client Dual Marker ========
 add_executable(dual_marker_client 
   src/dual_marker_client.cpp
 )
-
 ament_target_dependencies(dual_marker_client
   rclcpp
   rclcpp_action
@@ -105,9 +95,18 @@ ament_target_dependencies(dual_marker_client
   std_msgs
   aruco_msgs
 )
-
 rosidl_target_interfaces(dual_marker_client
   ${PROJECT_NAME} "rosidl_typesupport_cpp"
+)
+
+# ======== Client IIWA1 Pick&Place ========
+add_executable(iiwa1_pick_place_client 
+  src/iiwa1_pick_place_client.cpp
+)
+ament_target_dependencies(iiwa1_pick_place_client
+  rclcpp
+  std_msgs
+  trajectory_msgs
 )
 
 # ======== Install ========
@@ -116,6 +115,7 @@ install(TARGETS
   ros2_kdl_node_example 
   ros2_kdl_node_client 
   dual_marker_client
+  iiwa1_pick_place_client
   DESTINATION lib/${PROJECT_NAME}
 )
 

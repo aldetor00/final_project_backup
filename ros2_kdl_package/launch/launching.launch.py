@@ -63,11 +63,25 @@ def generate_launch_description():
             # Nota: il remapping della posa non serve piÃ¹ perchÃ© useremo le TF
         ]
     )
-
+    # --- NODO KDL per IIWA1 ---
+    ros2_kdl_node_iiwa1 = Node(
+        package='ros2_kdl_package',
+        executable='ros2_kdl_node',
+        namespace='iiwa',
+        output='screen',
+        parameters=[
+            config_params,
+            {'use_sim_time': True, 'cmd_interface': 'velocity', 'ctrl': 'vision'}
+        ],
+        remappings=[
+            ('joint_states', '/iiwa/joint_states'),
+            ('velocity_controller/commands', '/iiwa/velocity_controller/commands')
+        ]
+    )
     return LaunchDescription([
         cmd_interface_arg,
         ctrl_arg,
         aruco_marker_publisher,
-
+        ros2_kdl_node_iiwa1,
         ros2_kdl_node
     ])
