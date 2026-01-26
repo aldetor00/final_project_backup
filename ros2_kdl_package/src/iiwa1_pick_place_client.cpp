@@ -152,7 +152,12 @@ private:
 
     void publish_joint_trajectory(const std::vector<double>& joints, double duration_sec) {
         trajectory_msgs::msg::JointTrajectory msg;
-        msg.header.stamp = this->get_clock()->now();
+        
+        // IMPORTANTE: Usa timestamp = 0 per dire "esegui subito"
+        // Oppure usa now() + un piccolo offset per dare tempo al controller
+        msg.header.stamp = rclcpp::Time(0);  // Timestamp vuoto = esegui appena ricevuto
+        msg.header.frame_id = "";
+        
         msg.joint_names = {
             "iiwa_joint_a1", "iiwa_joint_a2", "iiwa_joint_a3",
             "iiwa_joint_a4", "iiwa_joint_a5", "iiwa_joint_a6", "iiwa_joint_a7"
@@ -160,9 +165,16 @@ private:
 
         trajectory_msgs::msg::JointTrajectoryPoint point;
         point.positions = joints;
+        
+        // Aggiungi velocità e accelerazioni
+        point.velocities = std::vector<double>(7, 0.0);
+        point.accelerations = std::vector<double>(7, 0.0);
+        
         point.time_from_start = rclcpp::Duration::from_seconds(duration_sec);
         
         msg.points.push_back(point);
+        
+        RCLCPP_INFO(this->get_logger(), "  → Pubblicato comando movimento (durata: %.1fs)", duration_sec);
         cmd_publisher_->publish(msg);
     }
 
