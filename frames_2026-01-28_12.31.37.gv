@@ -1,0 +1,35 @@
+digraph G {
+"map" -> "fra2mo/odom"[label=" Broadcaster: default_authority\nAverage rate: 10.4\nBuffer length: 2.5\nMost recent transform: 13.0\nOldest transform: 10.5\n"];
+"base_footprint" -> "base_link"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"fra2mo/odom" -> "base_footprint"[label=" Broadcaster: default_authority\nAverage rate: 50.41\nBuffer length: 2.44\nMost recent transform: 12.86\nOldest transform: 10.42\n"];
+"base_link" -> "d435_link"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"lidar_link" -> "laser_frame"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"base_link" -> "lidar_link"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"iiwa_iiwa_base" -> "iiwa_link_0"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"world" -> "iiwa_iiwa_base"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"iiwa_link_7" -> "iiwa_tool0"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"iiwa_link_6" -> "iiwa_link_7"[label=" Broadcaster: default_authority\nAverage rate: 15.126\nBuffer length: 2.38\nMost recent transform: 12.852\nOldest transform: 10.472\n"];
+"iiwa_tool0" -> "iiwa_vacuum_gripper_link"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"iiwa2_tool0" -> "iiwa2_camera_link"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"iiwa2_link_7" -> "iiwa2_tool0"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"iiwa2_iiwa_base" -> "iiwa2_link_0"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"world" -> "iiwa2_iiwa_base"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"iiwa2_link_6" -> "iiwa2_link_7"[label=" Broadcaster: default_authority\nAverage rate: 15.126\nBuffer length: 2.38\nMost recent transform: 12.838\nOldest transform: 10.458\n"];
+"iiwa2_tool0" -> "iiwa2_vacuum_gripper_link"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"iiwa2_link_0" -> "iiwa2_link_1"[label=" Broadcaster: default_authority\nAverage rate: 15.126\nBuffer length: 2.38\nMost recent transform: 12.838\nOldest transform: 10.458\n"];
+"iiwa2_link_1" -> "iiwa2_link_2"[label=" Broadcaster: default_authority\nAverage rate: 15.126\nBuffer length: 2.38\nMost recent transform: 12.838\nOldest transform: 10.458\n"];
+"iiwa2_link_2" -> "iiwa2_link_3"[label=" Broadcaster: default_authority\nAverage rate: 15.126\nBuffer length: 2.38\nMost recent transform: 12.838\nOldest transform: 10.458\n"];
+"iiwa2_link_3" -> "iiwa2_link_4"[label=" Broadcaster: default_authority\nAverage rate: 15.126\nBuffer length: 2.38\nMost recent transform: 12.838\nOldest transform: 10.458\n"];
+"iiwa2_link_4" -> "iiwa2_link_5"[label=" Broadcaster: default_authority\nAverage rate: 15.126\nBuffer length: 2.38\nMost recent transform: 12.838\nOldest transform: 10.458\n"];
+"iiwa2_link_5" -> "iiwa2_link_6"[label=" Broadcaster: default_authority\nAverage rate: 15.126\nBuffer length: 2.38\nMost recent transform: 12.838\nOldest transform: 10.458\n"];
+"iiwa_link_0" -> "iiwa_link_1"[label=" Broadcaster: default_authority\nAverage rate: 15.126\nBuffer length: 2.38\nMost recent transform: 12.852\nOldest transform: 10.472\n"];
+"iiwa_link_1" -> "iiwa_link_2"[label=" Broadcaster: default_authority\nAverage rate: 15.126\nBuffer length: 2.38\nMost recent transform: 12.852\nOldest transform: 10.472\n"];
+"iiwa_link_2" -> "iiwa_link_3"[label=" Broadcaster: default_authority\nAverage rate: 15.126\nBuffer length: 2.38\nMost recent transform: 12.852\nOldest transform: 10.472\n"];
+"iiwa_link_3" -> "iiwa_link_4"[label=" Broadcaster: default_authority\nAverage rate: 15.126\nBuffer length: 2.38\nMost recent transform: 12.852\nOldest transform: 10.472\n"];
+"iiwa_link_4" -> "iiwa_link_5"[label=" Broadcaster: default_authority\nAverage rate: 15.126\nBuffer length: 2.38\nMost recent transform: 12.852\nOldest transform: 10.472\n"];
+"iiwa_link_5" -> "iiwa_link_6"[label=" Broadcaster: default_authority\nAverage rate: 15.126\nBuffer length: 2.38\nMost recent transform: 12.852\nOldest transform: 10.472\n"];
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 1769603497.230324"[ shape=plaintext ] ;
+}->"world";
+}

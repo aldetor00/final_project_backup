@@ -56,8 +56,8 @@ private:
     std::vector<double> pick_pkg2_ = {2.8, 0.5, 0.0, -1.45, 0.0, 1.0, 0.0};
     
     // ========== TRAIETTORIE PLACE (comuni ad entrambi) ==========
-    std::vector<double> place_approach_ = {0.0, 0.5, 0.0, -1.45, 0.0, 1.0, 0.0};
-    std::vector<double> place_final_ = {0.0, 0.5, 0.0, -1.55, 0.0, 1.0, 0.0};
+    std::vector<double> place_approach_ = {0.0, 0.4, 0.0, -1.40, 0.0, 1.0, 0.0};
+    std::vector<double> place_final_ = {0.0, 0.7, 0.0, -1.60, 0.0, 1.0, 0.0};
 
     void execute_full_sequence() {
         RCLCPP_INFO(this->get_logger(), "🎬 Inizio sequenza automatica...");
@@ -70,9 +70,10 @@ private:
         RCLCPP_INFO(this->get_logger(), "╚═══════════════════════════════════╝");
         
         // Pick Package 1
+        std::this_thread::sleep_for(2s);
         RCLCPP_INFO(this->get_logger(), "🤖 Spostamento verso Package 1...");
-        publish_joint_trajectory(pick_pkg1_, 4.0);
-        std::this_thread::sleep_for(5s);  // Attesa movimento
+        publish_joint_trajectory(pick_pkg1_, 5.0);
+        std::this_thread::sleep_for(7s);  // Attesa movimento
         
         RCLCPP_INFO(this->get_logger(), "🔗 Attach Package 1");
         attach_pkg1_pub_->publish(std_msgs::msg::Empty());
@@ -81,11 +82,11 @@ private:
         // Place Package 1
         current_state_ = State::PLACING_PACKAGE_1;
         RCLCPP_INFO(this->get_logger(), "📍 Spostamento verso posizione Place...");
-        publish_joint_trajectory(place_approach_, 4.0);
+        publish_joint_trajectory(place_approach_, 5.0);
         std::this_thread::sleep_for(5s);
         
         RCLCPP_INFO(this->get_logger(), "⬇️  Abbassamento finale...");
-        publish_joint_trajectory(place_final_, 4.0);
+        publish_joint_trajectory(place_final_, 5.0);
         std::this_thread::sleep_for(5s);
         
         RCLCPP_INFO(this->get_logger(), "🔓 Detach Package 1");
@@ -99,11 +100,11 @@ private:
         RCLCPP_INFO(this->get_logger(), "");
         RCLCPP_INFO(this->get_logger(), "╔═══════════════════════════════════╗");
         RCLCPP_INFO(this->get_logger(), "║  ⏳ ATTESA RITORNO TURTLEBOT      ║");
-        RCLCPP_INFO(this->get_logger(), "║     (40 secondi)                  ║");
+        RCLCPP_INFO(this->get_logger(), "║     (185 secondi)                  ║");
         RCLCPP_INFO(this->get_logger(), "╚═══════════════════════════════════╝");
         
         // Countdown visivo
-        for (int i = 40; i > 0; i -= 10) {
+        for (int i = 185; i > 0; i -= 10) {
             RCLCPP_INFO(this->get_logger(), "⏱️  %d secondi rimanenti...", i);
             std::this_thread::sleep_for(10s);
         }
@@ -118,7 +119,7 @@ private:
         
         // Pick Package 2
         RCLCPP_INFO(this->get_logger(), "🤖 Spostamento verso Package 2...");
-        publish_joint_trajectory(pick_pkg2_, 4.0);
+        publish_joint_trajectory(pick_pkg2_, 5.0);
         std::this_thread::sleep_for(5s);
         
         RCLCPP_INFO(this->get_logger(), "🔗 Attach Package 2");
@@ -128,11 +129,11 @@ private:
         // Place Package 2
         current_state_ = State::PLACING_PACKAGE_2;
         RCLCPP_INFO(this->get_logger(), "📍 Spostamento verso posizione Place...");
-        publish_joint_trajectory(place_approach_, 4.0);
+        publish_joint_trajectory(place_approach_, 5.0);
         std::this_thread::sleep_for(5s);
         
         RCLCPP_INFO(this->get_logger(), "⬇️  Abbassamento finale...");
-        publish_joint_trajectory(place_final_, 4.0);
+        publish_joint_trajectory(place_final_, 5.0);
         std::this_thread::sleep_for(5s);
         
         RCLCPP_INFO(this->get_logger(), "🔓 Detach Package 2");

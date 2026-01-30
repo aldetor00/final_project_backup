@@ -132,7 +132,7 @@ def generate_launch_description():
         arguments=[
             '-topic', '/iiwa2/robot_description',
             '-name', 'iiwa2',
-            '-x', '9', '-y', '3.1', '-z', '0.1',
+            '-x', '8.5', '-y', '3.1', '-z', '0.1',
             '-joint-names'
         ] + iiwa2_names + [
             '-joint-positions'
@@ -226,9 +226,16 @@ def generate_launch_description():
             '/iiwa2/gripper/detach_package2@std_msgs/msg/Empty@ignition.msgs.Empty',
             '/iiwa2/gripper/state_package2@std_msgs/msg/Bool@ignition.msgs.Boolean'
         ],
+        remappings=[
+            ('/model/fra2mo/tf', '/tf'),
+            ('/model/fra2mo/odometry', '/odom')
+        ],
         output='screen'
     )
-
+    
+    # REMOVED: odom_tf node (now handled by DiffDrive plugin)
+    # REMOVED: static_tf_footprint_to_link (already defined in URDF)
+    
     # --- Detach handler ---
     detach_package1 = ExecuteProcess(
         cmd=['ros2', 'topic', 'pub', '--once',
@@ -309,9 +316,6 @@ def generate_launch_description():
         spawn_fra2mo,
         iiwa_handler,
         iiwa2_handler,
-       
-       
         bridge,
         detach_handler,
-        # aruco_detector
     ])

@@ -84,5 +84,12 @@ ros2 topic pub --once /iiwa/iiwa_arm_controller/joint_trajectory trajectory_msgs
     }
   ]
 }"
+ros2 run ros2_fra2mo follow_waypoints.py 
 
+ros2 launch ros2_fra2mo fra2mo_navigation.launch.py
 
+ros2 launch ros2_kdl_package launching.launch.py
+ros2 run ros2_kdl_package dual_marker_client
+ros2 run ros2_kdl_package iiwa1_pick_place_client
+
+[-3.0, 0.9, 0.0, -1.0, 0.0, 0.7, 0.0]
