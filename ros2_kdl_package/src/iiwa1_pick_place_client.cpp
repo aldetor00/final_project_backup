@@ -100,11 +100,11 @@ private:
         RCLCPP_INFO(this->get_logger(), "");
         RCLCPP_INFO(this->get_logger(), "╔═══════════════════════════════════╗");
         RCLCPP_INFO(this->get_logger(), "║  ⏳ ATTESA RITORNO TURTLEBOT      ║");
-        RCLCPP_INFO(this->get_logger(), "║     (185 secondi)                  ║");
+        RCLCPP_INFO(this->get_logger(), "║     (265 secondi)                  ║");
         RCLCPP_INFO(this->get_logger(), "╚═══════════════════════════════════╝");
         
         // Countdown visivo
-        for (int i = 185; i > 0; i -= 10) {
+        for (int i = 265; i > 0; i -= 10) {
             RCLCPP_INFO(this->get_logger(), "⏱️  %d secondi rimanenti...", i);
             std::this_thread::sleep_for(10s);
         }
@@ -118,9 +118,10 @@ private:
         RCLCPP_INFO(this->get_logger(), "╚═══════════════════════════════════╝");
         
         // Pick Package 2
+        std::this_thread::sleep_for(2s);
         RCLCPP_INFO(this->get_logger(), "🤖 Spostamento verso Package 2...");
         publish_joint_trajectory(pick_pkg2_, 5.0);
-        std::this_thread::sleep_for(5s);
+        std::this_thread::sleep_for(7s);
         
         RCLCPP_INFO(this->get_logger(), "🔗 Attach Package 2");
         attach_pkg2_pub_->publish(std_msgs::msg::Empty());

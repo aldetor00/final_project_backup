@@ -16,7 +16,7 @@ import time
 
 waypoints_forward = [
     {
-        "position": {"x": -3.32, "y": 0.12, "z": 0.10},
+        "position": {"x": -3.67, "y": 0.18, "z": 0.10},
         "orientation": {"x": 0.0, "y": 0.0, "z": -0.0948, "w": 0.9955}
     },
     {
@@ -32,7 +32,7 @@ waypoints_forward = [
         "orientation": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 1.0}
     },
     {
-        "position": {"x": 7.10, "y": 2.85,  "z": 0.10},
+        "position": {"x": 7.23, "y": 2.84,  "z": 0.10},
         "orientation": {"x": 0.0, "y": 0.0, "z": 1.0,  "w":0.0}
     }
 ]
@@ -200,7 +200,7 @@ def main():
         exit(1)
     
     # Wait at iiwa1 station (second visit)
-    wait_for_iiwa(30, 'iiwa1 (Second Visit)')
+    wait_for_iiwa(40, 'iiwa1 (Second Visit)')
     
     # ============================================
     # SECOND FORWARD PATH (iiwa1 → iiwa2)
