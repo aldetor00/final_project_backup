@@ -55,17 +55,17 @@ public:
 
 private:
     // Sequenze Joint Marker 1
-    std::vector<double> marker1_step0_ = {-3.0, 0.45, 0.0, -1.0, 0.0, 0.8, 0.0};
-    std::vector<double> marker1_step5_ = {-3.0, 0.8, 0.0, -1.0, 0.0, 0.8, 0.0};
-    std::vector<double> marker1_step6_ = {-3.0, 1.33, 0.0, -0.5, 0.0, 0.65, 0.0};
-    std::vector<double> marker1_step1_ = {-3.0, 0.0, 0.0, -1.25, 0.0, 0.5, 0.0};
+    std::vector<double> marker1_step0_ = {-2.89, 0.45, 0.0, -1.0, 0.0, 0.8, 0.0};
+    std::vector<double> marker1_step1_ = {-2.89, 0.0, 0.0, -1.25, 0.0, 0.5, 0.0};
     std::vector<double> marker1_step2_ = {1.5, 0.0, 0.0, -1.25, 0.0, 0.5, 0.0};
     std::vector<double> marker1_step3_ = {1.5, 0.65, 0.0, -1.25, 0.0, 0.5, 0.0};
     std::vector<double> marker1_step4_ = {1.5, 0.65, 0.0, -1.5, 0.0, 0.5, 0.0};
+    std::vector<double> marker1_step5_ = {-2.89, 0.8, 0.0, -1.0, 0.0, 0.8, 0.0};
+    std::vector<double> marker1_step6_ = {-2.89, 1.33, 0.0, -0.5, 0.0, 0.65, 0.0};
 
     // Sequenze Joint Marker 2
     std::vector<double> marker2_step0_ = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-    std::vector<double> marker2_step1_ = {-3.0, 0.0, 0.0, -1.5, 0.0, 0.5, 0.0};
+    std::vector<double> marker2_step1_ = {-2.89, 0.0, 0.0, -1.5, 0.0, 0.5, 0.0};
     std::vector<double> marker2_step2_ = {-1.5, 0.0, 0.0, -1.5, 0.0, 0.5, 0.0};
     std::vector<double> marker2_step3_ = {-1.5, 0.65, 0.0, -1.5, 0.0, 0.5, 0.0};
 
@@ -116,7 +116,7 @@ private:
        
         std::this_thread::sleep_for(1s);
         send_joint_goal_and_wait(marker1_step6_, 5.0);//fa
-
+        std::this_thread::sleep_for(7s);
         attach_pub_->publish(std_msgs::msg::Empty());
         std::this_thread::sleep_for(2s);
         send_joint_goal_and_wait(marker1_step0_, 5.0); 
@@ -153,6 +153,7 @@ private:
         send_joint_goal_and_wait(marker1_step5_, 5.0);//fa
         std::this_thread::sleep_for(2s);
         send_joint_goal_and_wait(marker1_step6_, 5.0);//fa
+        std::this_thread::sleep_for(7s);
         attach2_pub_->publish(std_msgs::msg::Empty());
         std::this_thread::sleep_for(2s);
         send_joint_goal_and_wait(marker1_step0_, 5.0); 
