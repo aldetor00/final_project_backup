@@ -100,11 +100,11 @@ private:
         RCLCPP_INFO(this->get_logger(), "");
         RCLCPP_INFO(this->get_logger(), "╔═══════════════════════════════════╗");
         RCLCPP_INFO(this->get_logger(), "║  ⏳ ATTESA RITORNO TURTLEBOT      ║");
-        RCLCPP_INFO(this->get_logger(), "║     (265 secondi)                  ║");
+        RCLCPP_INFO(this->get_logger(), "║     (280 secondi)                  ║");
         RCLCPP_INFO(this->get_logger(), "╚═══════════════════════════════════╝");
         
         // Countdown visivo
-        for (int i = 265; i > 0; i -= 10) {
+        for (int i = 280; i > 0; i -= 10) {
             RCLCPP_INFO(this->get_logger(), "⏱️  %d secondi rimanenti...", i);
             std::this_thread::sleep_for(10s);
         }
