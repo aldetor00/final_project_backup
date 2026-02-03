@@ -155,9 +155,8 @@ private:
     void publish_joint_trajectory(const std::vector<double>& joints, double duration_sec) {
         trajectory_msgs::msg::JointTrajectory msg;
         
-        // IMPORTANTE: Usa timestamp = 0 per dire "esegui subito"
-        // Oppure usa now() + un piccolo offset per dare tempo al controller
-        msg.header.stamp = rclcpp::Time(0);  // Timestamp vuoto = esegui appena ricevuto
+    
+        msg.header.stamp = rclcpp::Time(0);  
         msg.header.frame_id = "";
         
         msg.joint_names = {
