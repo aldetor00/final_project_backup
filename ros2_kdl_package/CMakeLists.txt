@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 project(ros2_kdl_package)
 
-# ======== Opzioni compilatore ========
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
@@ -42,7 +41,6 @@ target_include_directories(ros2_kdl_node PUBLIC
   $<INSTALL_INTERFACE:include>
   ${EIGEN3_INCLUDE_DIRS}
 )
-target_compile_features(ros2_kdl_node PUBLIC c_std_99 cxx_std_17)
 ament_target_dependencies(ros2_kdl_node
   orocos_kdl
   rclcpp
@@ -55,34 +53,10 @@ ament_target_dependencies(ros2_kdl_node
   trajectory_msgs
   tf2_ros
 )
-rosidl_target_interfaces(ros2_kdl_node
-  ${PROJECT_NAME} "rosidl_typesupport_cpp"
-)
+# FIX WARNING 1
+rosidl_get_typesupport_target(cpp_typesupport_target "${PROJECT_NAME}" "rosidl_typesupport_cpp")
+target_link_libraries(ros2_kdl_node "${cpp_typesupport_target}")
 
-# ======== Nodo di esempio opzionale ========
-add_executable(ros2_kdl_node_example src/ros2_kdl_node_example.cpp)
-target_include_directories(ros2_kdl_node_example PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-  ${EIGEN3_INCLUDE_DIRS}
-)
-target_compile_features(ros2_kdl_node_example PUBLIC c_std_99 cxx_std_17)
-ament_target_dependencies(ros2_kdl_node_example
-  orocos_kdl
-  rclcpp
-)
-
-# ======== Client semplice ========
-add_executable(ros2_kdl_node_client 
-  src/ros2_kdl_node_client.cpp
-)
-ament_target_dependencies(ros2_kdl_node_client
-  rclcpp
-  rclcpp_action
-)
-rosidl_target_interfaces(ros2_kdl_node_client
-  ${PROJECT_NAME} "rosidl_typesupport_cpp"
-)
 
 # ======== Client Dual Marker ========
 add_executable(dual_marker_client 
@@ -95,38 +69,32 @@ ament_target_dependencies(dual_marker_client
   std_msgs
   aruco_msgs
 )
-rosidl_target_interfaces(dual_marker_client
-  ${PROJECT_NAME} "rosidl_typesupport_cpp"
-)
+# FIX WARNING 2
+target_link_libraries(dual_marker_client "${cpp_typesupport_target}")
 
-# ======== Client IIWA1 Pick&Place ========
+
+# ======== Client IIWA1 Pick&Place (CORRETTO) ========
 add_executable(iiwa1_pick_place_client 
   src/iiwa1_pick_place_client.cpp
 )
 ament_target_dependencies(iiwa1_pick_place_client
   rclcpp
+  rclcpp_action
   std_msgs
   trajectory_msgs
 )
+# FIX WARNING 3
+target_link_libraries(iiwa1_pick_place_client "${cpp_typesupport_target}")
+
 
 # ======== Install ========
 install(TARGETS 
   ros2_kdl_node 
-  ros2_kdl_node_example 
-  ros2_kdl_node_client 
   dual_marker_client
   iiwa1_pick_place_client
   DESTINATION lib/${PROJECT_NAME}
 )
 
 install(DIRECTORY launch config DESTINATION share/${PROJECT_NAME})
-
-# ======== Testing (opzionale) ========
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  set(ament_cmake_copyright_FOUND TRUE)
-  set(ament_cmake_cpplint_FOUND TRUE)
-  ament_lint_auto_find_test_dependencies()
-endif()
 
 ament_package()

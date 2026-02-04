@@ -2,11 +2,11 @@ amcl:
   ros__parameters:
     use_sim_time: True
     # MIGLIORATO: Parametri del modello di movimento (ridotti per maggiore precisione)
-    alpha1: 0.05  # Era 0.2 - Rotazione causata da rotazione (ridotto)
-    alpha2: 0.05  # Era 0.2 - Rotazione causata da traslazione (ridotto)
-    alpha3: 0.05  # Era 0.2 - Traslazione causata da traslazione (ridotto)
-    alpha4: 0.05  # Era 0.2 - Traslazione causata da rotazione (ridotto)
-    alpha5: 0.05  # Era 0.2 - Rumore di traslazione strafe (ridotto)
+    alpha1: 0.05
+    alpha2: 0.05
+    alpha3: 0.05
+    alpha4: 0.05
+    alpha5: 0.05
     
     base_frame_id: "base_footprint"
     beam_skip_distance: 0.5
@@ -20,15 +20,12 @@ amcl:
     laser_min_range: -1.0
     laser_model_type: "likelihood_field"
     
-    # MIGLIORATO: Più beam per migliorare la precisione
-    max_beams: 120  # Era 60 - Raddoppiato per maggiore precisione
-    
-    # MIGLIORATO: Più particelle per localizzazione più accurata
-    max_particles: 2000  # Era 500 - Aumentato per maggiore precisione
-    min_particles: 200   # Era 50 - Aumentato proporzionalmente
+    max_beams: 120
+    max_particles: 2000
+    min_particles: 200
     
     odom_frame_id: "fra2mo/odom"
-    pf_err: 0.03  # Era 0.05 - Ridotto per convergenza più precisa
+    pf_err: 0.03
     pf_z: 0.99
     recovery_alpha_fast: 0.0
     recovery_alpha_slow: 0.0
@@ -36,17 +33,13 @@ amcl:
     robot_model_type: "nav2_amcl::DifferentialMotionModel"
     save_pose_rate: 0.5
     
-    # MIGLIORATO: Ridotto sigma_hit per match laser più preciso
-    sigma_hit: 0.2  # Era 0.9 - Molto ridotto per maggiore precisione
+    sigma_hit: 0.2
     
     tf_broadcast: true
+    transform_tolerance: 0.1
     
-    # MIGLIORATO: Transform tolerance ridotta
-    transform_tolerance: 0.1  # Era 0.2 - Dimezzata per maggiore precisione
-    
-    # MIGLIORATO: Aggiornamenti più frequenti
-    update_min_a: 0.15  # Era 0.3 - Ridotto (aggiorna più spesso durante rotazioni)
-    update_min_d: 0.1   # Era 0.2 - Ridotto (aggiorna più spesso durante traslazioni)
+    update_min_a: 0.15
+    update_min_d: 0.1
     
     z_hit: 0.5
     z_max: 0.05
@@ -148,10 +141,7 @@ bt_navigator_rclcpp_node:
 controller_server:
   ros__parameters:
     use_sim_time: True
-
-    # MIGLIORATO: Frequenza controller aumentata
-    controller_frequency: 10.0  # Era 5.0 - Raddoppiata per controllo più reattivo
-    
+    controller_frequency: 10.0
     min_x_velocity_threshold: 0.03
     min_y_velocity_threshold: 0.03
     min_theta_velocity_threshold: 0.3
@@ -166,45 +156,47 @@ controller_server:
     goal_checker_plugin: "goal_checker"
     goal_checker:
       plugin: "nav2_controller::SimpleGoalChecker"
-      # MIGLIORATO: Tolleranze ridotte per precisione maggiore
-      xy_goal_tolerance: 0.05   # Era 0.1 - Dimezzata per maggiore precisione
-      yaw_goal_tolerance: 0.1   # Era 0.2 - Dimezzata per maggiore precisione
+      xy_goal_tolerance: 0.05
+      yaw_goal_tolerance: 0.1
       stateful: True
 
     controller_plugins: ["FollowPath"]
     FollowPath:
       plugin: "nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController"
 
-      # MIGLIORATO: Velocità ridotta per maggiore controllo
-      desired_linear_vel: 0.3  # Era 0.4 - Ridotta del 25%
+      # === [TURBO MOD] VELOCITÀ BASE RADDOPPIATA ===
+      desired_linear_vel: 0.6    # Era 0.3
       
-      # MIGLIORATO: Lookahead distances ottimizzate
-      lookahead_dist: 0.5        # Era 0.6 - Ridotta
-      min_lookahead_dist: 0.3    # Era 0.4 - Ridotta
-      max_lookahead_dist: 0.7    # Era 0.9 - Ridotta
-      lookahead_time: 1.5        # Era 2.0 - Ridotto
+      lookahead_dist: 0.5
+      min_lookahead_dist: 0.3
+      max_lookahead_dist: 0.7
+      lookahead_time: 1.5
       
-      # MIGLIORATO: Transform tolerance ridotta
-      transform_tolerance: 0.05  # Era 0.1 - Dimezzata
+      transform_tolerance: 0.05
       
       use_velocity_scaled_lookahead_dist: true
-      min_approach_linear_velocity: 0.05  # Era 0.1 - Ridotta per avvicinamento più lento
-      approach_velocity_scaling_dist: 0.6  # Era 0.5 - Aumentata leggermente
+      
+      # === [TURBO MOD] NON RALLENTARE TROPPO ALLA FINE ===
+      min_approach_linear_velocity: 0.15  # Era 0.05
+      
+      approach_velocity_scaling_dist: 0.6
       use_collision_detection: true
       max_allowed_time_to_collision_up_to_carrot: 1.0
 
       use_regulated_linear_velocity_scaling: true
-      use_cost_regulated_linear_velocity_scaling: true  # Era false - ATTIVATO per rallentare vicino ostacoli
+      use_cost_regulated_linear_velocity_scaling: true
 
-      regulated_linear_scaling_min_radius: 0.5  # Era 0.7 - Ridotto per curve più strette
-      regulated_linear_scaling_min_speed: 0.15  # Era 0.2 - Ridotta velocità minima
+      # === [TURBO MOD] PIÙ CORAGGIO NELLE CURVE ===
+      regulated_linear_scaling_min_radius: 0.5
+      regulated_linear_scaling_min_speed: 0.25  # Era 0.15
+      
       allow_reversing: false
       use_rotate_to_heading: true
-      rotate_to_heading_min_angle: 0.5  # Era 0.785 - Ridotto per rotare più spesso
+      rotate_to_heading_min_angle: 0.5
       
-      # MIGLIORATO: Accelerazione angolare ridotta per movimenti più fluidi
-      max_angular_accel: 3.5  # Era 5.0 - Ridotta del 30%
-      rotate_to_heading_angular_vel: 1.5  # Era 1.8 - Ridotta
+      # === [TURBO MOD] ROTAZIONE AGGRESSIVA ===
+      max_angular_accel: 4.0     # Era 3.5
+      rotate_to_heading_angular_vel: 1.5  # Era 1.5
       
       max_robot_pose_search_dist: 10.0
       use_interpolation: true
@@ -217,11 +209,8 @@ local_costmap:
   local_costmap:
     ros__parameters:
       use_sim_time: True
-
-      # MIGLIORATO: Update più frequenti
-      update_frequency: 15.0  # Era 10.0 - Aumentata del 50%
-      publish_frequency: 15.0  # Era 10.0 - Aumentata del 50%
-      
+      update_frequency: 15.0
+      publish_frequency: 15.0
       global_frame: fra2mo/odom
       robot_base_frame: base_footprint
 
@@ -232,16 +221,16 @@ local_costmap:
       always_send_full_costmap: True
 
       robot_radius: 0.11
-      #footprint: "[[0.17, 0.17], [0.17, -0.17], [-0.17, -0.17], [-0.17, 0.17]]"
       footprint_padding: 0.03
 
       plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         enabled: True
-        # MIGLIORATO: Inflation radius ridotto per passare più vicino
-        inflation_radius: 0.3  # Era 0.4 - Ridotto del 25%
-        cost_scaling_factor: 2.0  # Era 1.0 - Aumentato per gradiente più ripido
+        inflation_radius: 0.3
+        # === [TURBO MOD] RIDOTTA PAURA DEI MURI ===
+        cost_scaling_factor: 5.0  # Era 2.0 - Decadimento più rapido del costo
+      
       obstacle_layer:
         plugin: "nav2_costmap_2d::ObstacleLayer"
         enabled: True
@@ -272,11 +261,8 @@ global_costmap:
   global_costmap:
     ros__parameters:
       use_sim_time: True
-
-      # MIGLIORATO: Update più frequenti anche per global costmap
-      update_frequency: 5.0  # Era 10.0 - Ridotta (global non serve così frequente)
-      publish_frequency: 5.0  # Era 10.0 - Ridotta
-      
+      update_frequency: 5.0
+      publish_frequency: 5.0
       global_frame: map
       robot_base_frame: base_footprint
 
@@ -285,16 +271,14 @@ global_costmap:
       track_unknown_space: True
 
       robot_radius: 0.11
-      # footprint: "[[0.17, 0.17], [0.17, -0.17], [-0.17, -0.17], [-0.17, 0.17]]"
       footprint_padding: 0.03
 
       plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         enabled: True
-        # MIGLIORATO: Mantenuta inflation più alta per global planning
-        inflation_radius: 0.35  # Era 0.4 - Ridotto leggermente
-        cost_scaling_factor: 2.5  # Era 2.0 - Aumentato
+        inflation_radius: 0.35
+        cost_scaling_factor: 2.5
       obstacle_layer:
         plugin: "nav2_costmap_2d::ObstacleLayer"
         enabled: True
@@ -342,8 +326,7 @@ planner_server:
     planner_plugins: ["GridBased"]
     GridBased:
       plugin: "nav2_navfn_planner/NavfnPlanner"
-      # MIGLIORATO: Tolleranza ridotta per path più precisi
-      tolerance: 0.1  # Era 0.2 - Dimezzata
+      tolerance: 0.1
       use_astar: false
       allow_unknown: true
 
@@ -370,18 +353,19 @@ velocity_smoother:
   ros__parameters:
     use_sim_time: True
 
-    # MIGLIORATO: Smoothing più frequente
-    smoothing_frequency: 10.0  # Era 5.0 - Raddoppiata
+    # === [TURBO MOD] SMOOTHING PIÙ FLUIDO ===
+    smoothing_frequency: 20.0  # Era 10.0
     scale_velocities: False
     feedback: "OPEN_LOOP"
     
-    # MIGLIORATO: Velocità massime ridotte per maggiore controllo
-    max_velocity: [0.4, 0.0, 1.2]   # Era [0.5, 0.0, 1.5] - Ridotte del 20%
-    min_velocity: [-0.4, 0.0, -1.2]  # Era [-0.5, 0.0, -1.5] - Ridotte
+    # === [TURBO MOD] LIMITI SBLOCCATI ===
+    # Formato: [x, y, theta]
+    max_velocity: [0.6, 0.0, 2.5]   # Era [0.4, 0.0, 1.2]
+    min_velocity: [-0.6, 0.0, -2.5]  # Era [-0.4, 0.0, -1.2]
     
-    # MIGLIORATO: Accelerazioni ridotte per movimenti più fluidi
-    max_accel: [1.0, 0.0, 2.5]   # Era [1.5, 0.0, 3.0] - Ridotte ~30%
-    max_decel: [-1.0, 0.0, -2.5]  # Era [-1.5, 0.0, -3.0] - Ridotte
+    # === [TURBO MOD] ACCELERAZIONE MASSIVA ===
+    max_accel: [2.5, 0.0, 3.5]   # Era [1.0, 0.0, 2.5]
+    max_decel: [-2.5, 0.0, -3.5]  # Era [-1.0, 0.0, -2.5]
     
     deadband_velocity: [0.0, 0.0, 0.0]
     velocity_timeout: 1.0

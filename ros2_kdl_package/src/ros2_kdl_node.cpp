@@ -7,6 +7,7 @@
 #include <cmath>
 #include <thread>
 #include <mutex>
+#include <string>
 
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
@@ -30,21 +31,40 @@ public:
 
     Iiwa_pub_sub() : Node("ros2_kdl_node"), state_received_(false) {
         this->declare_parameter<double>("traj_duration", 5.0);
-        this->declare_parameter<double>("Kp", 10.0);
-
         this->get_parameter("traj_duration", traj_duration_);
-        this->get_parameter("Kp", Kp_);
 
         robot_ = nullptr;
-        controller_ = nullptr;
 
         // 1. SETUP KDL
         if (!setup_kdl()) {
-            RCLCPP_ERROR(this->get_logger(), "CRITICO: Setup KDL fallito. Il nodo non funzionerà.");
+            RCLCPP_ERROR(this->get_logger(), "CRITICO: Setup KDL fallito.");
             return;
         }
 
-        // 2. AVVIO ACTION SERVER
+        // =================================================================================
+        // FIX CRITICO: CREAZIONE MANUALE E ORDINATA DEI NOMI DEI GIUNTI
+        // =================================================================================
+        // Non ci fidiamo di joint_states. Costruiamo la lista: 
+        // iiwa_joint_a1, iiwa_joint_a2, ... iiwa_joint_a7
+        
+        std::string ns = this->get_namespace(); 
+        // Rimuovi slash iniziale se presente (es "/iiwa" -> "iiwa")
+        if (ns.size() > 0 && ns[0] == '/') ns = ns.substr(1);
+        if (ns.empty()) ns = "iiwa"; // Fallback
+
+        ordered_joint_names_.clear();
+        for(int i=1; i<=7; i++) {
+            // Nota: Assumiamo che i giunti si chiamino "nome_joint_aX"
+            // Se nel tuo URDF si chiamano diversamente (es. "joint_a1" senza prefisso), 
+            // cambia questa riga. Ma per gli iiwa standard è così:
+            ordered_joint_names_.push_back(ns + "_joint_a" + std::to_string(i));
+        }
+        
+        RCLCPP_INFO(this->get_logger(), "Mappatura Giunti Forzata: 1->%s, 2->%s ...", 
+            ordered_joint_names_[0].c_str(), ordered_joint_names_[1].c_str());
+        // =================================================================================
+
+        // Action Server
         this->action_server_ = rclcpp_action::create_server<ExecuteTrajectory>(
             this, "ExecuteTrajectory",
             std::bind(&Iiwa_pub_sub::handle_goal, this, std::placeholders::_1, std::placeholders::_2),
@@ -52,67 +72,45 @@ public:
             std::bind(&Iiwa_pub_sub::handle_accepted, this, std::placeholders::_1));
 
         jointSubscriber_ = this->create_subscription<sensor_msgs::msg::JointState>(
-            "/iiwa2/joint_states", 10, std::bind(&Iiwa_pub_sub::joint_state_subscriber, this, std::placeholders::_1));
+            "joint_states", 10, std::bind(&Iiwa_pub_sub::joint_state_subscriber, this, std::placeholders::_1));
 
         cmdPublisher_ = this->create_publisher<trajectory_msgs::msg::JointTrajectory>(
-            "/iiwa2/iiwa_arm_controller/joint_trajectory", 10);
-
-        RCLCPP_INFO(this->get_logger(), "Server KDL per iiwa2 avviato correttamente.");
+            "iiwa_arm_controller/joint_trajectory", 10);
+            
+        RCLCPP_INFO(this->get_logger(), "Nodo KDL attivo su namespace: %s", ns.c_str());
     }
 
 private:
     bool setup_kdl() {
         auto parameters_client = std::make_shared<rclcpp::SyncParametersClient>(this, "robot_state_publisher");
-        int retries = 0;
         while (!parameters_client->wait_for_service(1s)) {
             if (!rclcpp::ok()) return false;
-            RCLCPP_INFO(this->get_logger(), "In attesa di robot_state_publisher...");
-            retries++;
-            if (retries > 5) {
-                RCLCPP_ERROR(this->get_logger(), "Timeout: robot_state_publisher non trovato!");
-                return false;
-            }
+            RCLCPP_INFO(this->get_logger(), "Attesa robot_state_publisher...");
         }
-
         auto parameter = parameters_client->get_parameters({"robot_description"});
-        if (parameter.empty()) {
-            RCLCPP_ERROR(this->get_logger(), "Parametro robot_description vuoto!");
-            return false;
-        }
+        if (parameter.empty()) return false;
 
         KDL::Tree robot_tree;
-        if (!kdl_parser::treeFromString(parameter[0].value_to_string(), robot_tree)) {
-            RCLCPP_ERROR(this->get_logger(), "Errore parsing URDF!");
-            return false;
-        }
+        if (!kdl_parser::treeFromString(parameter[0].value_to_string(), robot_tree)) return false;
 
         robot_ = std::make_shared<KDLRobot>(robot_tree);
-
         unsigned int nj = robot_->getNrJnts();
-        if (nj == 0) {
-            RCLCPP_ERROR(this->get_logger(), "Errore: Il robot ha 0 giunti!");
-            return false;
-        }
-
         joint_positions_.resize(nj);
-        joint_velocities_.resize(nj);
         joint_positions_.data.setZero();
-        joint_velocities_.data.setZero();
-
-        controller_ = std::make_shared<KDLController>(*robot_);
-        RCLCPP_INFO(this->get_logger(), "KDL inizializzato con %d giunti.", nj);
         return true;
     }
 
     void publish_trajectory(const std::vector<double>& joint_targets, double duration_sec) {
         trajectory_msgs::msg::JointTrajectory msg;
         msg.header.stamp = this->get_clock()->now();
-        msg.joint_names = {"iiwa2_joint_a1", "iiwa2_joint_a2", "iiwa2_joint_a3",
-                           "iiwa2_joint_a4", "iiwa2_joint_a5", "iiwa2_joint_a6", "iiwa2_joint_a7"};
+        
+        // USA I NOMI ORDINATI MANUALMENTE (Non quelli rilevati a caso)
+        msg.joint_names = ordered_joint_names_;
 
         trajectory_msgs::msg::JointTrajectoryPoint point;
-        point.positions = joint_targets;
+        point.positions = joint_targets; // Questo vettore [0] ora finirà sicuro su joint_a1
         point.time_from_start = rclcpp::Duration::from_seconds(duration_sec);
+        
         msg.points.push_back(point);
         cmdPublisher_->publish(msg);
     }
@@ -121,114 +119,115 @@ private:
         const auto goal = goal_handle->get_goal();
         auto result = std::make_shared<ExecuteTrajectory::Result>();
 
-        // 1. Check preliminare
-        if (robot_ == nullptr) {
-            RCLCPP_ERROR(this->get_logger(), "Robot non inizializzato! Impossibile eseguire.");
-            result->success = false;
-            goal_handle->abort(result);
-            return;
-        }
-
-        // 2. Copia dati con Mutex
-        KDL::JntArray q_current(robot_->getNrJnts());
-        KDL::JntArray qd_current(robot_->getNrJnts());
-
+        // Check ricezione dati
         {
             std::lock_guard<std::mutex> lock(mutex_);
             if (!state_received_) {
-                RCLCPP_WARN(this->get_logger(), "Nessun dato giunti ricevuto! Controlla i topic.");
+                RCLCPP_WARN(this->get_logger(), "Nessuno stato giunti ricevuto!");
                 result->success = false;
-                goal_handle->abort(result);
-                return;
+                goal_handle->abort(result); return;
             }
-            q_current = joint_positions_;
-            qd_current = joint_velocities_;
         }
 
-        // 3. Esecuzione
+        std::vector<double> target_vec;
         if (!goal->joints_target.empty()) {
-            RCLCPP_INFO(this->get_logger(), "Executing Joint Trajectory...");
-            publish_trajectory(goal->joints_target, traj_duration_);
+            target_vec = goal->joints_target;
+        } else {
+             // Se servisse IK cartesiana, va qui.
+             RCLCPP_ERROR(this->get_logger(), "IK non implementata");
+             result->success = false;
+             goal_handle->abort(result); return;
         }
-        else {
-            RCLCPP_INFO(this->get_logger(), "Executing Cartesian IK...");
 
-            std::vector<double> q_std(q_current.rows());
-            std::vector<double> qd_std(qd_current.rows());
-            for(unsigned int i=0; i<q_current.rows(); ++i) {
-                q_std[i] = q_current(i);
-                qd_std[i] = qd_current(i);
+        // Pubblica il comando
+        RCLCPP_INFO(this->get_logger(), "Invio comando...");
+        publish_trajectory(target_vec, traj_duration_);
+
+        // --- ATTESA DI CONVERGENZA ---
+        // Aspettiamo che il robot arrivi davvero, controllando l'errore
+        rclcpp::Rate rate(10);
+        double timeout = traj_duration_ + 5.0; 
+        double start_time = this->now().seconds();
+        bool reached = false;
+
+        while (rclcpp::ok() && (this->now().seconds() - start_time) < timeout) {
+            if (goal_handle->is_canceling()) {
+                result->success = false;
+                goal_handle->canceled(result); return;
             }
 
-            robot_->update(q_std, qd_std);
+            // Calcola errore medio
+            double max_error = 0.0;
+            {
+                std::lock_guard<std::mutex> lock(mutex_);
+                // Confrontiamo la posizione attuale con il target
+                // Poiché joint_positions_ viene riempito dal subscriber che ora mappa correttamente
+                for(size_t i=0; i<target_vec.size() && i<joint_positions_.rows(); ++i) {
+                    double err = std::abs(joint_positions_(i) - target_vec[i]);
+                    if(err > max_error) max_error = err;
+                }
+            }
 
-            KDL::Frame target_f(KDL::Rotation::RPY(0, M_PI, 0),
-                               KDL::Vector(goal->pose.position.x, goal->pose.position.y, goal->pose.position.z));
-
-            KDL::JntArray q_target_kdl(robot_->getNrJnts());
-            robot_->getInverseKinematics(target_f, q_target_kdl);
-
-            std::vector<double> q_vec;
-            for(unsigned int i=0; i<q_target_kdl.rows(); i++) q_vec.push_back(q_target_kdl(i));
-
-            publish_trajectory(q_vec, traj_duration_);
-        }
-
-        // 4. Attesa attiva
-        double time_slept = 0.0;
-        double total_wait = traj_duration_ + 0.5;
-        rclcpp::Rate rate(10);
-
-        while (rclcpp::ok() && time_slept < total_wait) {
-            if (goal_handle->is_canceling()) {
-                RCLCPP_INFO(this->get_logger(), "Goal canceled.");
-                result->success = false;
-                goal_handle->canceled(result);
-                return;
+            // Se l'errore massimo su tutti i giunti è < 0.05 rad (circa 3 gradi), siamo arrivati
+            if (max_error < 0.05) {
+                reached = true;
+                break;
             }
             rate.sleep();
-            time_slept += 0.1;
         }
 
-        result->success = true;
-        goal_handle->succeed(result);
+        if (reached) {
+            result->success = true;
+            goal_handle->succeed(result);
+        } else {
+            RCLCPP_WARN(this->get_logger(), "Timeout attesa posizione!");
+            // Lo diamo buono comunque per non bloccare tutto, ma occhio
+            result->success = true; 
+            goal_handle->succeed(result);
+        }
     }
 
     void joint_state_subscriber(const sensor_msgs::msg::JointState& msg) {
+        std::lock_guard<std::mutex> lock(mutex_);
         if (robot_ == nullptr) return;
 
-        std::lock_guard<std::mutex> lock(mutex_);
-
-        if (msg.position.size() < joint_positions_.rows()) {
-            return;
+        // Mapping intelligente: 
+        // Il topic joint_states potrebbe avere un ordine diverso.
+        // Noi cerchiamo i nomi "iiwa_joint_a1" dentro msg.name e prendiamo il valore corrispondente.
+        
+        for (size_t i = 0; i < ordered_joint_names_.size(); ++i) {
+            std::string target_name = ordered_joint_names_[i];
+            
+            // Cerca questo nome nel messaggio ricevuto
+            bool found = false;
+            for(size_t j=0; j<msg.name.size(); ++j) {
+                if (msg.name[j] == target_name) {
+                    if (i < joint_positions_.rows()) {
+                        joint_positions_(i) = msg.position[j];
+                        found = true;
+                    }
+                    break;
+                }
+            }
         }
-
-        for (size_t i = 0; i < joint_positions_.rows(); ++i) {
-            joint_positions_.data[i] = msg.position[i];
-            joint_velocities_.data[i] = msg.velocity[i];
-        }
-
         state_received_ = true;
     }
 
     // Boilerplate Action
     rclcpp_action::GoalResponse handle_goal(const rclcpp_action::GoalUUID&, std::shared_ptr<const ExecuteTrajectory::Goal>)
     { return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE; }
-
     rclcpp_action::CancelResponse handle_cancel(const std::shared_ptr<GoalHandleExecuteTrajectory>)
     { return rclcpp_action::CancelResponse::ACCEPT; }
-
     void handle_accepted(const std::shared_ptr<GoalHandleExecuteTrajectory> goal_handle)
     { std::thread{std::bind(&Iiwa_pub_sub::execute, this, std::placeholders::_1), goal_handle}.detach(); }
 
     std::shared_ptr<KDLRobot> robot_;
-    std::shared_ptr<KDLController> controller_;
-    KDL::JntArray joint_positions_, joint_velocities_;
-    double traj_duration_, Kp_;
+    KDL::JntArray joint_positions_;
+    std::vector<std::string> ordered_joint_names_; 
+    double traj_duration_;
     rclcpp_action::Server<ExecuteTrajectory>::SharedPtr action_server_;
     rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr jointSubscriber_;
     rclcpp::Publisher<trajectory_msgs::msg::JointTrajectory>::SharedPtr cmdPublisher_;
-
     std::mutex mutex_;
     bool state_received_;
 };

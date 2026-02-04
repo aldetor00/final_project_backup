@@ -1,10 +1,21 @@
+# ================= CONFIGURAZIONE IIWA 1 =================
 /iiwa/ros2_kdl_node:
   ros__parameters:
-    Kp: 1.0
+    Kp: 10.0                 # Guadagno proporzionale (aumentato per precisione)
+    traj_duration: 3.5       # Durata base (usata se la logica dinamica fallisce o per test)
     acc_duration: 1.5
-    traj_duration: 10.0
     total_time: 10.0
     trajectory_len: 100
-    end_position: [0.5, 0.5, 0.5]
+    traj_type: "linear"
+    s_type: "trapezoidal"
+
+# ================= CONFIGURAZIONE IIWA 2 =================
+/iiwa2/ros2_kdl_node:
+  ros__parameters:
+    Kp: 10.0                 # Puoi mettere valori diversi qui se iiwa2 deve essere più aggressivo
+    traj_duration: 3.5
+    acc_duration: 1.5
+    total_time: 10.0
+    trajectory_len: 100
     traj_type: "linear"
     s_type: "trapezoidal"
