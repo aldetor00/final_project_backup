@@ -1,5 +1,3 @@
-# final_project_back
-
 # Autonomous Multi-Robot Logistics: Fra2mo & KUKA iiwa Integration
 
 ##  Project Overview
