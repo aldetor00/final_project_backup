@@ -63,6 +63,7 @@ Terminal A: Start Mobile Navigation Logic This node sends waypoints to the Nav2 
 ros2 run ros2_fra2mo follow_waypoints.py
 ```
 Terminal B: Start Manipulation Clients Run the pick & place logic. Note: You must run these in separate tabs.
+
 Loader Arm
 ```
 ros2 run ros2_kdl_package iiwa1_pick_place_client
