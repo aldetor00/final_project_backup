@@ -59,8 +59,8 @@ private:
     std::vector<double> prepick_pkg2_ = {2.8, 0.4, 0.0, -1.45, 0.0, 1.0, 0.0};
     std::vector<double> pick_pkg2_ = {2.8, 0.63, 0.0, -1.45, 0.0, 1.0, 0.0};
     
-    std::vector<double> place_approach_ = {0.0, 0.4, 0.0, -1.40, 0.0, 1.0, 0.0};
-    std::vector<double> place_final_ = {0.0, 0.7, 0.0, -1.60, 0.0, 1.0, 0.0};
+    std::vector<double> place_approach_ = {0.1, 0.4, 0.0, -1.40, 0.0, 1.0, 0.0};
+    std::vector<double> place_final_ = {0.1, 0.7, 0.0, -1.60, 0.0, 1.0, 0.0};
 
     void execute_full_sequence() {
         RCLCPP_INFO(this->get_logger(), "⏳ Attesa Action Server...");
@@ -80,7 +80,7 @@ private:
         RCLCPP_INFO(this->get_logger(), "🤖 Spostamento verso Package 1...");
         send_joint_goal(prepick_pkg1_, 5.0); 
         send_joint_goal(pick_pkg1_, 2.0); 
-
+        std::this_thread::sleep_for(7s); 
         RCLCPP_INFO(this->get_logger(), "🔗 Attach Package 1");
         attach_pkg1_pub_->publish(std_msgs::msg::Empty());
         std::this_thread::sleep_for(2s); 
@@ -140,8 +140,9 @@ private:
     void send_joint_goal(const std::vector<double>& joints, double duration_sec) {
         auto goal_msg = ExecuteTrajectory::Goal();
         goal_msg.joints_target = joints;
-        
-        auto goal_handle_future = action_client_->async_send_goal(goal_msg);
+        goal_msg.ctrl = "joint"; // Specifichiamo esplicitamente il controllo giunti
+    
+    auto goal_handle_future = action_client_->async_send_goal(goal_msg);
         if (goal_handle_future.wait_for(5s) != std::future_status::ready) {
             RCLCPP_ERROR(this->get_logger(), "Timeout invio goal");
             return;

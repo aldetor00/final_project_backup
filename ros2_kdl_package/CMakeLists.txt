@@ -21,6 +21,7 @@ find_package(rosidl_default_generators REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(trajectory_msgs REQUIRED)
 find_package(aruco_msgs REQUIRED)
+find_package(controller_manager_msgs REQUIRED)
 
 # ======== Generazione action ========
 rosidl_generate_interfaces(${PROJECT_NAME}
@@ -29,7 +30,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 )
 ament_export_dependencies(rosidl_default_runtime)
 
-# ======== Nodo principale (Server) ========
+# ======== 1. Nodo principale (Server originale) ========
 add_executable(ros2_kdl_node
   src/ros2_kdl_node.cpp
   src/kdl_robot.cpp
@@ -52,13 +53,16 @@ ament_target_dependencies(ros2_kdl_node
   geometry_msgs
   trajectory_msgs
   tf2_ros
+  aruco_msgs  
+  controller_manager_msgs
 )
-# FIX WARNING 1
 rosidl_get_typesupport_target(cpp_typesupport_target "${PROJECT_NAME}" "rosidl_typesupport_cpp")
 target_link_libraries(ros2_kdl_node "${cpp_typesupport_target}")
 
 
-# ======== Client Dual Marker ========
+
+
+# ======== 3. Client Dual Marker ========
 add_executable(dual_marker_client 
   src/dual_marker_client.cpp
 )
@@ -69,11 +73,9 @@ ament_target_dependencies(dual_marker_client
   std_msgs
   aruco_msgs
 )
-# FIX WARNING 2
 target_link_libraries(dual_marker_client "${cpp_typesupport_target}")
 
-
-# ======== Client IIWA1 Pick&Place (CORRETTO) ========
+# ======== 4. Client IIWA1 Pick&Place ========
 add_executable(iiwa1_pick_place_client 
   src/iiwa1_pick_place_client.cpp
 )
@@ -83,13 +85,13 @@ ament_target_dependencies(iiwa1_pick_place_client
   std_msgs
   trajectory_msgs
 )
-# FIX WARNING 3
 target_link_libraries(iiwa1_pick_place_client "${cpp_typesupport_target}")
 
 
 # ======== Install ========
 install(TARGETS 
   ros2_kdl_node 
+
   dual_marker_client
   iiwa1_pick_place_client
   DESTINATION lib/${PROJECT_NAME}

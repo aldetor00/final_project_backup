@@ -2,6 +2,7 @@
 int32 order
 geometry_msgs/Pose pose
 float64[] joints_target
+string ctrl
 ---
 # Result
 bool success

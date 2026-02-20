@@ -186,7 +186,7 @@ def main():
         exit(1)
     
     # Step 3: Wait at iiwa2 station (waypoint 5)
-    wait_for_iiwa(30, 'iiwa2 (First Visit)')
+    wait_for_iiwa(40, 'iiwa2 (First Visit)')
     
     # ============================================
     # REVERSE PATH (iiwa2 → iiwa1)

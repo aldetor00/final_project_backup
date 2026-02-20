@@ -23,6 +23,7 @@ def generate_launch_description():
     )
 
     # --- NODO ARUCO ---
+    # NON uso namespace qui, ma faccio remapping esplicito dei topic
     aruco_marker_publisher = Node(
         package='aruco_ros',
         executable='marker_publisher',
@@ -32,12 +33,13 @@ def generate_launch_description():
             'marker_size': 0.05,
             'reference_frame': 'iiwa2_camera_link', 
             'camera_frame': 'iiwa2_camera_link',
-            'use_sim_time': True ,
+            'use_sim_time': True,
             'dictionary': 10,
         }],
         remappings=[
-            ('/image', '/iiwa2_camera'),
-            ('/camera_info', '/camera_info')
+            ('image', '/iiwa2_camera'),
+            ('camera_info', '/camera_info'),
+            ('markers', '/aruco_marker_publisher/markers')  # Topic globale
         ],
         output='screen'
     )

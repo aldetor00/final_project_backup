@@ -132,7 +132,7 @@ def generate_launch_description():
         arguments=[
             '-topic', '/iiwa2/robot_description',
             '-name', 'iiwa2',
-            '-x', '8.5', '-y', '3.1', '-z', '0.1',
+            '-x', '8.0', '-y', '3.1', '-z', '0.1',
             '-joint-names'
         ] + iiwa2_names + [
             '-joint-positions'
@@ -184,6 +184,18 @@ def generate_launch_description():
         output="screen"
     )
 
+    vel_iiwa2 = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=[
+            "velocity_controller",
+            "-c", "/iiwa2/controller_manager",
+            "--controller-manager-timeout", "60",
+            "--inactive"  # CRITICAL: spawna come inactive per evitare conflitto con arm_controller
+        ],
+        output="screen"
+    )
+
     # --- Event Handlers ---
     load_iiwa1_controllers = RegisterEventHandler(
         OnProcessExit(
@@ -195,7 +207,7 @@ def generate_launch_description():
     load_iiwa2_controllers = RegisterEventHandler(
         OnProcessExit(
             target_action=spawn_iiwa2,
-            on_exit=[jsb_iiwa2, arm_iiwa2]
+            on_exit=[jsb_iiwa2, arm_iiwa2, vel_iiwa2]
         )
     )
 

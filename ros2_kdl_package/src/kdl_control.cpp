@@ -1,5 +1,3 @@
-
-
 #include "kdl_control.h"
 #include <stdio.h>
 #include <iostream>
@@ -84,7 +82,64 @@ KDL::JntArray KDLController::velocity_ctrl_null(Eigen::Matrix<double,6,1> error_
 
 
 
+KDL::JntArray KDLController::vision_ctrl(int Kp, Eigen::Vector3d cPo, Eigen::Vector3d sd)
+{
+    unsigned int nj = robot_->getNrJnts();
+    KDL::JntArray qd(nj);
+    qd.data.setZero();
 
+    double distance = cPo.norm();
+    if (distance < 0.01) return qd; 
+    Eigen::Vector3d s = cPo / distance;
+
+    Eigen::Vector3d error = s - sd;
+
+    Eigen::Matrix3d Rc = toEigen(robot_->getEEFrame().M);
+    Eigen::Matrix<double,6,6> R = Eigen::Matrix<double,6,6>::Zero();
+    R.block<3, 3>(0, 0) = Rc;
+    R.block<3, 3>(3, 3) = Rc;
+    
+    Eigen::MatrixXd J = robot_->getEEJacobian().data;
+    Eigen::MatrixXd J_pinv = J.completeOrthogonalDecomposition().pseudoInverse();
+
+    Eigen::Matrix<double,3,3> L1 = -1.0/distance * (Eigen::Matrix3d::Identity() - s*s.transpose());
+    Eigen::Matrix3d S_skew;
+    S_skew << 0, -s.z(), s.y(), s.z(), 0, -s.x(), -s.y(), s.x(), 0;
+
+    Eigen::Matrix<double,3,6> L;
+    L.block<3, 3>(0, 0) = L1;
+    L.block<3, 3>(0, 3) = S_skew;
+
+    Eigen::MatrixXd LJ = L * (R.transpose() * J);
+    Eigen::MatrixXd LJ_pinv = LJ.completeOrthogonalDecomposition().pseudoInverse();
+
+    // Velocità di avanzamento verso il basso (Z)
+    double v_z = 0.0;
+    double target_distance = 0.01; 
+    if (distance > target_distance) {
+        v_z = 0.15 * (distance - target_distance);
+        if (v_z > 0.04) v_z = 0.04; 
+    }
+    
+    Eigen::Matrix<double,6,1> v_cam;
+    v_cam << 0, 0, v_z, 0, 0, 0; 
+
+    Eigen::VectorXd qd_forward = J_pinv * (R * v_cam);
+    
+    // Null space per i limiti giunti
+    Eigen::MatrixXd I = Eigen::MatrixXd::Identity(nj,nj);
+    Eigen::VectorXd q = robot_->getJntValues();
+    Eigen::MatrixXd JntLimits = robot_->getJntLimits();
+    Eigen::VectorXd q0_dot(nj);
+    for (unsigned int i = 0; i < nj; i++) {
+        double range = (JntLimits(i,1) - JntLimits(i,0));
+        q0_dot(i) = (1.0/50.0) * (range * (JntLimits(i,1) + JntLimits(i,0) - 2*q(i)));
+    }
+    
+    qd.data = -(double)Kp * 0.8 * LJ_pinv * error + qd_forward + (I - J_pinv * J) * q0_dot;
+    return qd;
+}
+/*
 
 KDL::JntArray KDLController::vision_ctrl(int Kp, Eigen::Vector3d cPo, Eigen::Vector3d sd)
 {
@@ -153,7 +208,7 @@ KDL::JntArray KDLController::vision_ctrl(int Kp, Eigen::Vector3d cPo, Eigen::Vec
 
 
 
-
+*/
 
 
 
